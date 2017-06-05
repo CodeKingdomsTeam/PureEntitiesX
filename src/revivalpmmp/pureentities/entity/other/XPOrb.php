@@ -32,9 +32,9 @@ class XPOrb extends Entity {
 
 	protected $gravity = 0.04;
 	protected $drag = 0;
-	
+
 	protected $experience = 0;
-	
+
 	protected $range = 6;
 
 	public function initEntity(){
@@ -50,13 +50,13 @@ class XPOrb extends Entity {
 		if($this->closed){
 			return false;
 		}
-		
+
 		$tickDiff = $currentTick - $this->lastUpdate;
-		
+
 		$this->lastUpdate = $currentTick;
-		
+
 		$this->timings->startTiming();
-		
+
 		$hasUpdate = $this->entityBaseTick($tickDiff);
 
 		$this->age++;
@@ -66,7 +66,7 @@ class XPOrb extends Entity {
 			$this->close();
 			$hasUpdate = true;
 		}
-		
+
 		$minDistance = PHP_INT_MAX;
 		$target = null;
 		foreach($this->getViewers() as $p){
@@ -75,9 +75,9 @@ class XPOrb extends Entity {
 					$target = $p;
 					$minDistance = $dist;
 				}
-			} 
+			}
 		}
-		
+
 		if($target !== null){
 			$moveSpeed = 0.7;
 			$motX = ($target->getX() - $this->x) / 8;
@@ -85,7 +85,7 @@ class XPOrb extends Entity {
 			$motZ = ($target->getZ() - $this->z) / 8;
 			$motSqrt = sqrt($motX * $motX + $motY * $motY + $motZ * $motZ);
 			$motC = 1 - $motSqrt;
-		
+
 			if($motC > 0){
 				$motC *= $motC;
 				$this->motionX = $motX / $motSqrt * $motC * $moveSpeed;
@@ -117,9 +117,9 @@ class XPOrb extends Entity {
 		}
 
 		$this->move($this->motionX, $this->motionY, $this->motionZ);
-		
+
 		$this->updateMovement();
-		
+
 		$this->timings->stopTiming();
 
 		return $hasUpdate or !$this->onGround or abs($this->motionX) > 0.00001 or abs($this->motionY) > 0.00001 or abs($this->motionZ) > 0.00001;
@@ -128,11 +128,11 @@ class XPOrb extends Entity {
 	public function canCollideWith(Entity $entity){
 		return false;
 	}
-	
+
 	public function setExperience($exp){
 		$this->experience = $exp;
 	}
-	
+
 	public function getExperience(){
 		return $this->experience;
 	}
@@ -141,7 +141,7 @@ class XPOrb extends Entity {
 		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_NO_AI, true);
 		$pk = new AddEntityPacket();
 		$pk->type = XPOrb::NETWORK_ID;
-		$pk->eid = $this->getId();
+		$pk->entityRuntimeId = $this->getId();
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
