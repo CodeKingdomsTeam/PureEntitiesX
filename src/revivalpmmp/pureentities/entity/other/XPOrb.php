@@ -116,6 +116,7 @@ class XPOrb extends Entity {
 			}
 		}
 
+
         $this->move($this->motionX, $this->motionY, $this->motionZ);
 
         $this->updateMovement();
