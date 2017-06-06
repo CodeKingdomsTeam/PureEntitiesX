@@ -70,7 +70,7 @@ class WitherSkeleton extends WalkingMonster {
         parent::spawnTo($player);
 
         $pk = new MobEquipmentPacket();
-        $pk->eid = $this->getId();
+        $pk->entityRuntimeId = $this->getId();
         $pk->item = new StoneSword();
         $pk->inventorySlot = 10;
         $pk->hotbarSlot = 10;

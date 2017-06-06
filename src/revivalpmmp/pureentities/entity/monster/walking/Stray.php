@@ -102,7 +102,7 @@ class Stray extends WalkingMonster implements ProjectileSource {
         parent::spawnTo($player);
 
         $pk = new MobEquipmentPacket();
-        $pk->eid = $this->getId();
+        $pk->entityRuntimeId = $this->getId();
         $pk->item = new Bow();
         $pk->inventorySlot = 10;
         $pk->hotbarSlot = 10;
