@@ -241,9 +241,9 @@ abstract class WalkingEntity extends BaseEntity {
                 } else if ($blockingBlock instanceof Slab or $blockingBlock instanceof Stair) { // on stairs entities shouldnt jump THAT high
                     $this->motionY = $this->gravity * 4;
                     PureEntities::logOutput("$this: checkJump(): found slab or stair!", PureEntities::DEBUG);
-                } else if ($this->motionY <= ($this->gravity * 8)) {
-                    PureEntities::logOutput("$this: checkJump(): set motion to gravity * 8!", PureEntities::DEBUG);
-                    $this->motionY = $this->gravity * 8;
+                } else if ($this->motionY <= ($this->gravity * 4)) {
+                    PureEntities::logOutput("$this: checkJump(): set motion to gravity * 4!", PureEntities::DEBUG);
+                    $this->motionY = $this->gravity * 4;
                 } else {
                     PureEntities::logOutput("$this: checkJump(): nothing else!", PureEntities::DEBUG);
                     $this->motionY += $this->gravity * 0.25;
