@@ -243,7 +243,7 @@ abstract class WalkingEntity extends BaseEntity {
                     $this->motionY = $this->gravity * 4;
                     PureEntities::logOutput("$this: checkJump(): found slab or stair!", PureEntities::DEBUG);
                 } else if ($this->motionY <= ($this->gravity * 2)) {
-                    PureEntities::logOutput("$this: checkJump(): set motion to gravity * 4!", PureEntities::DEBUG);
+                    PureEntities::logOutput("$this: checkJump(): set motion to gravity * 2!", PureEntities::DEBUG);
                     $this->motionY = $this->gravity * 2;
                 } else {
                     PureEntities::logOutput("$this: checkJump(): nothing else!", PureEntities::DEBUG);
