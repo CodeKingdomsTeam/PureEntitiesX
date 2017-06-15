@@ -21,6 +21,7 @@ namespace revivalpmmp\pureentities\entity;
 use pocketmine\block\Block;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
+use pocketmine\block\Torch;
 use pocketmine\entity\Item;
 use pocketmine\Player;
 use revivalpmmp\pureentities\entity\animal\Animal;
@@ -235,7 +236,12 @@ abstract class WalkingEntity extends BaseEntity {
             PureEntities::logOutput("$this: checkJump(): block in front is $blockingBlock, upperBlock is $upperBlock, secondUpperblock is $secondUpperBlock");
             // check if we can get through the upper of the block directly in front of the entity
             if ($upperBlock->canPassThrough() && $secondUpperBlock->canPassThrough()) {
-                if ($blockingBlock instanceof Fence || $blockingBlock instanceof FenceGate) { // cannot pass fence or fence gate ...
+                if ( $blockingBlock instanceof Torch ) {
+                    
+                    PureEntities::logOutput("$this: checkJump(): found torch, no need to jump!", PureEntities::DEBUG);
+                    return false;
+
+                } else if ($blockingBlock instanceof Fence || $blockingBlock instanceof FenceGate) { // cannot pass fence or fence gate ...
                     $this->motionY = $this->gravity;
                     PureEntities::logOutput("$this: checkJump(): found fence or fence gate!", PureEntities::DEBUG);
                 } else if ($blockingBlock instanceof Slab or $blockingBlock instanceof Stair) { // on stairs entities shouldnt jump THAT high
