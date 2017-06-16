@@ -55,6 +55,8 @@ class Blaze extends FlyingMonster implements ProjectileSource {
 
         $this->fireProof = true;
         $this->setDamage([0, 0, 0, 0]);
+
+        $this->floatingHeight = mt_rand() / mt_getrandmax() * 2 + 1;
     }
 
     public function getName(): string {
@@ -157,8 +159,11 @@ class Blaze extends FlyingMonster implements ProjectileSource {
                 if ($this->getBaseTarget() instanceof Creature) {
                     $this->motionX = 0;
                     $this->motionZ = 0;
-                    if ($this->distance($this->getBaseTarget()) > $this->y - $this->getLevel()->getHighestBlockAt((int)$this->x, (int)$this->z)) {
+
+                    if ( $this->y < $this->getBaseTarget()->y + $this->floatingHeight || $this->y < $this->getLevel()->getHighestBlockAt((int)$this->x, (int)$this->z) + $this->floatingHeight) {
                         $this->motionY = $this->gravity;
+                    } else if ($this->y > $this->getLevel()->getHighestBlockAt((int)$this->x, (int)$this->z) + $this->floatingHeight + 0.5) {
+                        $this->motionY = -$this->gravity;
                     } else {
                         $this->motionY = 0;
                     }
@@ -210,22 +215,25 @@ class Blaze extends FlyingMonster implements ProjectileSource {
             $this->attackDelay = 0;
 
             $f = 1.2;
-            $yaw = $this->yaw + mt_rand(-220, 220) / 10;
-            $pitch = $this->pitch + mt_rand(-120, 120) / 10;
+            $yaw = $this->yaw + mt_rand(-60, 60) / 10;
+            $pitch = $this->pitch + mt_rand(-60, 60) / 10;
             $pos = new Location(
                 $this->x + (-sin($yaw / 180 * M_PI) * cos($pitch / 180 * M_PI) * 0.5),
-                $this->getEyeHeight(),
+                $this->y,
                 $this->z + (cos($yaw / 180 * M_PI) * cos($pitch / 180 * M_PI) * 0.5),
                 $yaw,
                 $pitch,
                 $this->level
             );
+
             $fireball = PureEntities::create("FireBall", $pos, $this);
             if (!($fireball instanceof FireBall)) {
                 return;
             }
 
             $fireball->setExplode(true);
+            $fireball->setBlockBreaking(false);
+            $fireball->setDamage(2);
             $fireball->setMotion(new Vector3(
                 -sin(rad2deg($yaw)) * cos(rad2deg($pitch)) * $f * $f,
                 -sin(rad2deg($pitch)) * $f * $f,
