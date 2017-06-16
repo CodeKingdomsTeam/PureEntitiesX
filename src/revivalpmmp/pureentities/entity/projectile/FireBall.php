@@ -18,6 +18,8 @@
 
 namespace revivalpmmp\pureentities\entity\projectile;
 
+use pocketmine\level\Position;
+use revivalpmmp\pureentities\PureEntities;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\level\Level;
 use pocketmine\level\particle\CriticalParticle;
@@ -35,13 +37,14 @@ class FireBall extends Projectile {
     public $width = 0.5;
     public $height = 0.5;
 
-    protected $damage = 4;
+    protected $damage = 2.8;
 
     protected $drag = 0.01;
     protected $gravity = 0.05;
 
     protected $isCritical;
     protected $canExplode = false;
+    protected $isBlockBreaking = true;
 
     public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null, bool $critical = false) {
         parent::__construct($level, $nbt, $shootingEntity);
@@ -55,6 +58,20 @@ class FireBall extends Projectile {
 
     public function setExplode(bool $bool) {
         $this->canExplode = $bool;
+    }
+
+     public function isBlockBreaking(): bool {
+        return $this->isBlockBreaking;
+    }
+
+    public function setBlockBreaking(bool $bool) {
+        $this->isBlockBreaking = $bool;
+    }
+
+    public function setDamage( float $damage ) {
+
+        $this->damage = $damage;
+
     }
 
     public function onUpdate(int $currentTick): bool {
@@ -77,8 +94,9 @@ class FireBall extends Projectile {
 
         if ($this->age > 1200 or $this->isCollided) {
             if ($this->isCollided and $this->canExplode) {
-                $this->server->getPluginManager()->callEvent($ev = new ExplosionPrimeEvent($this, 2.8));
+                $this->server->getPluginManager()->callEvent($ev = new ExplosionPrimeEvent($this, $this->damage));
                 if (!$ev->isCancelled()) {
+
                     $explosion = new Explosion($this, $ev->getForce(), $this->getOwningEntity());
                     if ($ev->isBlockBreaking()) {
                         $explosion->explodeA();
