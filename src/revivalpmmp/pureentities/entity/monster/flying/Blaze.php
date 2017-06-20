@@ -226,8 +226,8 @@ class Blaze extends FlyingMonster implements ProjectileSource {
             $this->attackDelay = 0;
 
             $f = 1.2;
-            $yaw = $this->yaw + mt_rand(-60, 60) / 10;
-            $pitch = $this->pitch + mt_rand(-60, 60) / 10;
+            $yaw = $this->yaw;
+            $pitch = $this->pitch;
             $pos = new Location(
                 $this->x + (-sin($yaw / 180 * M_PI) * cos($pitch / 180 * M_PI) * 0.5),
                 $this->y,
