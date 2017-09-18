@@ -18,6 +18,7 @@
 namespace revivalpmmp\pureentities\entity\other;
 
 use pocketmine\entity\Entity;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 use revivalpmmp\pureentities\PluginConfiguration;
@@ -46,7 +47,7 @@ class XPOrb extends Entity {
         }
 	}
 
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick): bool {
 		if($this->closed){
 			return false;
 		}
@@ -110,22 +111,23 @@ class XPOrb extends Entity {
                     if ($this->getLevel() !== null) {
                         $this->level->addSound(new ExpPickupSound($target, mt_rand(0, 1000)));
                     }
-                    $target->addXp($this->getExperience());
-                    $target->resetXpCooldown();
+                        $target->namedtag->XpTotal = new IntTag("XpTotal", $this->getExperience());
+                        $target->recalculateXpProgress();
                 }
 			}
 		}
 
-		$this->move($this->motionX, $this->motionY, $this->motionZ);
 
-		$this->updateMovement();
+        $this->move($this->motionX, $this->motionY, $this->motionZ);
 
-		$this->timings->stopTiming();
+        $this->updateMovement();
 
-		return $hasUpdate or !$this->onGround or abs($this->motionX) > 0.00001 or abs($this->motionY) > 0.00001 or abs($this->motionZ) > 0.00001;
-	}
+        $this->timings->stopTiming();
 
-	public function canCollideWith(Entity $entity){
+        return $hasUpdate or !$this->onGround or abs($this->motionX) > 0.00001 or abs($this->motionY) > 0.00001 or abs($this->motionZ) > 0.00001;
+    }
+
+	public function canCollideWith(Entity $entity): bool {
 		return false;
 	}
 
@@ -137,19 +139,19 @@ class XPOrb extends Entity {
 		return $this->experience;
 	}
 
-	public function spawnTo(Player $player){
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_NO_AI, true);
-		$pk = new AddEntityPacket();
-		$pk->type = XPOrb::NETWORK_ID;
-		$pk->entityRuntimeId = $this->getId();
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->speedX = $this->motionX;
-		$pk->speedY = $this->motionY;
-		$pk->speedZ = $this->motionZ;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
+    public function spawnTo(Player $player){
+        $this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_NO_AI, true);
+        $pk = new AddEntityPacket();
+        $pk->type = XPOrb::NETWORK_ID;
+        $pk->entityRuntimeId = $this->getId();
+        $pk->x = $this->x;
+        $pk->y = $this->y;
+        $pk->z = $this->z;
+        $pk->speedX = $this->motionX;
+        $pk->speedY = $this->motionY;
+        $pk->speedZ = $this->motionZ;
+        $pk->metadata = $this->dataProperties;
+        $player->dataPacket($pk);
 
 		parent::spawnTo($player);
 	}

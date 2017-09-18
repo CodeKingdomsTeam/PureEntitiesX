@@ -25,6 +25,7 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use revivalpmmp\pureentities\data\Data;
+use revivalpmmp\pureentities\utils\MobDamageCalculator;
 
 class CaveSpider extends WalkingMonster {
     const NETWORK_ID = Data::CAVE_SPIDER;
@@ -43,22 +44,28 @@ class CaveSpider extends WalkingMonster {
         $this->setDamage([0, 2, 3, 3]);
     }
 
-    public function getName() {
+    public function getName(): string {
         return "CaveSpider";
     }
 
+    /**
+     * Attack the player
+     *
+     * @param Entity $player
+     */
     public function attackEntity(Entity $player) {
         if ($this->attackDelay > 10 && $this->distanceSquared($player) < 1.32) {
             $this->attackDelay = 0;
-            $ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $this->getDamage());
-            $player->attack($ev->getFinalDamage(), $ev);
-            $player->addEffect(Effect::getEffect(Effect::POISON));
+            $ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK,
+                MobDamageCalculator::calculateFinalDamage($player, $this->getDamage()));
+            $player->attack($ev);
+            Effect::getEffect(Effect::POISON)->applyEffect($player);
 
             $this->checkTamedMobsAttack($player);
         }
     }
 
-    public function getDrops() {
+    public function getDrops(): array {
         $drops = [];
         if ($this->isLootDropAllowed()) {
             array_push($drops, Item::get(Item::STRING, 0, mt_rand(0, 2)));
@@ -71,7 +78,7 @@ class CaveSpider extends WalkingMonster {
         return $drops;
     }
 
-    public function getMaxHealth() {
+    public function getMaxHealth() : int{
         return 12;
     }
 

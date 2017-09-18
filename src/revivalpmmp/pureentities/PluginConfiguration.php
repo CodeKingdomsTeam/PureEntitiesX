@@ -38,13 +38,14 @@ class PluginConfiguration {
     private $interactiveButtonCorrection = false; // defines for interactive button search if correction should be used or not
     private $useBlockLightForSpawn = false; // determines if the spawner classes should use block light instead of time on server
     private $useSkyLightForSpawn = false; // determines if the spawner classes should use skylight instead of time on server
-    private $emitLoveParticlesCostantly = false; // determines if love particles are emitted constantly for entities that are in love mode
-    private $tamedTeleportBlocks = 12; // minimum distance to player when tamed entities start to teleport to their ownes
+    private $emitLoveParticlesConstantly = false; // determines if love particles are emitted constantly for entities that are in love mode
+    private $tamedTeleportBlocks = 12; // minimum distance to player when tamed entities start to teleport to their owner
     private $tamedPlayerMaxDistance = 10; // default: until the player is not x blocks away the tamed entities are walking around aimlessly
     private $xpEnabled = false; // default is false!
     private $pickupLootTicks = 10; // default: 10
     private $logEnabled = false; // enable or disable file logging
     private $enableSpawning = true; // enable spawning of entities
+    private $enabledWorlds = [];
     private $enableAsyncTasks = true; // enable async tasks for setting owner of tamed and setting mob equipment
     private $enableLookingTasks = true; // enable looking tasks (like shear, tame etc. pp) and enderman looking task
     private $enableNBT = true; // enable load/store of NBT
@@ -68,6 +69,7 @@ class PluginConfiguration {
 
     public function __construct(PureEntities $pluginBase) {
 
+        $this->enabledWorlds = $pluginBase->getConfig()->get("enabledworlds", []);
         $this->enableSpawning = $pluginBase->getConfig()->getNested("tasks.spawn", true);
         $this->enableAsyncTasks = $pluginBase->getConfig()->getNested("tasks.async", true);
         $this->enableLookingTasks = $pluginBase->getConfig()->getNested("tasks.looking", true);
@@ -89,7 +91,7 @@ class PluginConfiguration {
         $this->useBlockLightForSpawn = $pluginBase->getConfig()->getNested("spawn-task.use-block-light", false); // default: do not use block light
         $this->useSkyLightForSpawn = $pluginBase->getConfig()->getNested("spawn-task.use-sky-light", false); // default: do not use block light
 
-        $this->emitLoveParticlesCostantly = $pluginBase->getConfig()->getNested("breeding.emit-love-particles-constantly", false); // default: do not emit love particles constantly
+        $this->emitLoveParticlesConstantly = $pluginBase->getConfig()->getNested("breeding.emit-love-particles-constantly", false); // default: do not emit love particles constantly
 
         $this->xpEnabled = $pluginBase->getConfig()->getNested("xp.enabled", false); // default: xp system not enabled
 
@@ -111,7 +113,7 @@ class PluginConfiguration {
             " [teleportTamedDistance:" . $this->tamedTeleportBlocks . "] [tamedFollowDistance:" . $this->tamedPlayerMaxDistance . "]" .
             " [blockOfInterestTicks:" . $this->blockOfInterestTicks . "] [checkTargetSkipTicks:" . $this->checkTargetSkipTicks . "] [pickupLootTicks:" . $this->pickupLootTicks . "]" .
             " [interactiveButtonCorrection:" . $this->interactiveButtonCorrection . "] [useBlockLight:" . $this->useBlockLightForSpawn . "] [useSkyLight:" . $this->useSkyLightForSpawn . "]" .
-            " [emitLoveParticles:" . $this->emitLoveParticlesCostantly . "] [xpEnabled:" . $this->xpEnabled . "]" .
+            " [emitLoveParticles:" . $this->emitLoveParticlesConstantly . "] [xpEnabled:" . $this->xpEnabled . "]" .
             " [idleChance:" . $this->idleChance . "] [idleMin:" . $this->idleMin . "] [idleMax:" . $this->idleMax . "] [idleTimeBetween:" . $this->idleTimeBetween . "secs]" .
             " [panicEnabled:" . $this->enablePanic . "] [panicTicks:" . $this->panicTicks . "] [entityMaxAge:" . $this->maxAge . "]");
 
@@ -176,8 +178,8 @@ class PluginConfiguration {
     /**
      * @return bool|mixed
      */
-    public function getEmitLoveParticlesCostantly() {
-        return $this->emitLoveParticlesCostantly;
+    public function getEmitLoveParticlesConstantly() {
+        return $this->emitLoveParticlesConstantly;
     }
 
     /**
@@ -251,6 +253,13 @@ class PluginConfiguration {
     }
 
     /**
+     * @return array
+     */
+    public function getEnabledWorlds() {
+        return $this->enabledWorlds;
+    }
+
+    /**
      * @return bool|mixed
      */
     public function getEnableAsyncTasks() {
@@ -291,8 +300,4 @@ class PluginConfiguration {
     public function getMaxAge() {
         return $this->maxAge;
     }
-
-
-
-
 }

@@ -51,7 +51,7 @@ abstract class WalkingMonster extends WalkingEntity implements Monster {
     public abstract function attackEntity(Entity $player);
 
     /**
-     * This is only a little helper method to NOT implement that in each tameable entity. This method
+     * This is only a little helper method to NOT implement that in each tamable entity. This method
      * checks if the entity is tamed and the attacked entity is the owner. If so, the method will do
      * nothing. Otherwise, the attackEntity method is called which has to be implemented by each monster entity.
      *
@@ -86,9 +86,8 @@ abstract class WalkingMonster extends WalkingEntity implements Monster {
                     }
                 }
             }
-
-            return parent::checkTarget(false);
         }
+		return parent::checkTarget($checkSkip);
     }
 
     public function getDamage(int $difficulty = null): float {
@@ -160,7 +159,7 @@ abstract class WalkingMonster extends WalkingEntity implements Monster {
         }
     }
 
-    public function onUpdate($currentTick) {
+    public function onUpdate(int $currentTick): bool {
         if ($this->server->getDifficulty() < 1) {
             $this->close();
             return false;
@@ -205,7 +204,7 @@ abstract class WalkingMonster extends WalkingEntity implements Monster {
         return true;
     }
 
-    public function entityBaseTick($tickDiff = 1, $EnchantL = 0) {
+    public function entityBaseTick(int $tickDiff = 1): bool {
         Timings::$timerEntityBaseTick->startTiming();
 
         $hasUpdate = parent::entityBaseTick($tickDiff);
@@ -214,7 +213,7 @@ abstract class WalkingMonster extends WalkingEntity implements Monster {
         if ($this instanceof Enderman) {
             if ($this->level->getBlock(new Vector3(Math::floorFloat($this->x), (int)$this->y, Math::floorFloat($this->z))) instanceof Water) {
                 $ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
-                $this->attack($ev->getFinalDamage(), $ev);
+                $this->attack($ev);
                 $this->move(mt_rand(-20, 20), mt_rand(-20, 20), mt_rand(-20, 20));
             }
         } else {
@@ -224,7 +223,7 @@ abstract class WalkingMonster extends WalkingEntity implements Monster {
                 if ($airTicks <= -20) {
                     $airTicks = 0;
                     $ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
-                    $this->attack($ev->getFinalDamage(), $ev);
+                    $this->attack($ev);
                 }
                 $this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $airTicks);
             } else {

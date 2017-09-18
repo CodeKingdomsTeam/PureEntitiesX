@@ -44,7 +44,7 @@ abstract class SwimmingAnimal extends SwimmingEntity implements Animal {
         return $this->getDataFlag(self::DATA_FLAG_BABY, 0);
     }
 
-    public function entityBaseTick($tickDiff = 1, $EnchantL = 0) {
+    public function entityBaseTick(int $tickDiff = 1): bool {
         Timings::$timerEntityBaseTick->startTiming();
 
         $hasUpdate = parent::entityBaseTick($tickDiff);
@@ -55,7 +55,7 @@ abstract class SwimmingAnimal extends SwimmingEntity implements Animal {
             if ($airTicks <= -20) {
                 $airTicks = 0;
                 $ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
-                $this->attack($ev->getFinalDamage(), $ev);
+                $this->attack($ev);
             }
             $this->setDataProperty(Entity::DATA_AIR, Entity::DATA_TYPE_SHORT, $airTicks);
         } else {
@@ -66,7 +66,7 @@ abstract class SwimmingAnimal extends SwimmingEntity implements Animal {
         return $hasUpdate;
     }
 
-    public function onUpdate($currentTick) {
+    public function onUpdate(int $currentTick): bool {
         if (!$this->isAlive()) {
             if (++$this->deadTicks >= 23) {
                 $this->close();

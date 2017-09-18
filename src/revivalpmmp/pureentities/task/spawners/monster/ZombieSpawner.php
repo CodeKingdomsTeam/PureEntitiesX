@@ -43,7 +43,7 @@ class ZombieSpawner extends BaseSpawner {
 
     public function spawn(Position $pos, Player $player): bool {
         if ($this->spawnAllowedByProbability()) { // first check if spawn would be allowed, if not the other method calls make no sense at all
-            $block = $pos->level->getBlock($pos); // because we get the air block, we need to substract 1 from the y position
+            $block = $pos->level->getBlock($pos); // because we get the air block, we need to subtract 1 from the y position
             $biomeId = $pos->level->getBiomeId($pos->x, $pos->z);
             $herdSize = mt_rand(1, 4); // generate between 1 and 4 zombies in a group (normally, 4 are spawned, but in this case ...)
 
@@ -98,7 +98,7 @@ class ZombieSpawner extends BaseSpawner {
         }
         $count = 0;
         foreach ($level->getEntities() as $entity) { // check all entities in given level
-            if ($entity->isAlive() and !$entity->closed and $entity::NETWORK_ID == $this->getEntityNetworkId()) { // count only alive, not closed and desired entities
+            if ($entity->isAlive() and !$entity->isClosed() and $entity::NETWORK_ID == $this->getEntityNetworkId()) { // count only alive, not closed and desired entities
                 $count++;
             }
         }

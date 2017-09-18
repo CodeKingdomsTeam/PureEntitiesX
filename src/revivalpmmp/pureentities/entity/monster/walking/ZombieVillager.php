@@ -26,6 +26,7 @@ use pocketmine\event\Timings;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use revivalpmmp\pureentities\data\Data;
+use revivalpmmp\pureentities\utils\MobDamageCalculator;
 
 class ZombieVillager extends WalkingMonster {
     const NETWORK_ID = Data::ZOMBIE_VILLAGER;
@@ -45,21 +46,27 @@ class ZombieVillager extends WalkingMonster {
         $this->setDamage([0, 3, 4, 6]);
     }
 
-    public function getName() {
+    public function getName(): string {
         return "ZombieVillager";
     }
 
+    /**
+     * Attack a player
+     *
+     * @param Entity $player
+     */
     public function attackEntity(Entity $player) {
         if ($this->attackDelay > 10 && $this->distanceSquared($player) < 1) {
             $this->attackDelay = 0;
-            $ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $this->getDamage());
-            $player->attack($ev->getFinalDamage(), $ev);
+            $ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK,
+                MobDamageCalculator::calculateFinalDamage($player, $this->getDamage()));
+            $player->attack($ev);
 
             $this->checkTamedMobsAttack($player);
         }
     }
 
-    public function entityBaseTick($tickDiff = 1, $EnchantL = 0) {
+    public function entityBaseTick(int $tickDiff = 1): bool {
         Timings::$timerEntityBaseTick->startTiming();
 
         $hasUpdate = parent::entityBaseTick($tickDiff);
@@ -76,7 +83,7 @@ class ZombieVillager extends WalkingMonster {
         return $hasUpdate;
     }
 
-    public function getDrops() {
+    public function getDrops(): array {
         $drops = [];
         if ($this->isLootDropAllowed()) {
             array_push($drops, Item::get(Item::ROTTEN_FLESH, 0, mt_rand(0, 2)));
@@ -95,7 +102,7 @@ class ZombieVillager extends WalkingMonster {
         return $drops;
     }
 
-    public function getMaxHealth() {
+    public function getMaxHealth() : int{
         return 20;
     }
 

@@ -108,6 +108,9 @@ class EventListener implements Listener {
         $player = $event->getPlayer();
         $return = false;
         if ($packet->pid() === ProtocolInfo::INTERACT_PACKET) {
+            /**
+             * @var $packet InteractPacket
+             */
             if ($packet->action === InteractPacket::ACTION_RIGHT_CLICK) {
                 $entity = $player->level->getEntity($packet->target);
                 if ($entity instanceof IntfShearable and
@@ -244,7 +247,7 @@ class EventListener implements Listener {
     public function playerJoin (PlayerJoinEvent $ev) {
         PureEntities::logOutput("[EventListener] playerJoin: " . $ev->getPlayer()->getName(), PureEntities::DEBUG);
         foreach ($ev->getPlayer()->getLevel()->getEntities() as $entity) {
-            if ($entity->isAlive() and !$entity->closed and $entity instanceof IntfCanEquip and $entity instanceof WalkingMonster and
+            if ($entity->isAlive() and !$entity->isClosed() and $entity instanceof IntfCanEquip and $entity instanceof WalkingMonster and
                 PluginConfiguration::getInstance()->getEnableAsyncTasks()
             ) {
                 Server::getInstance()->getScheduler()->scheduleDelayedTask(new ShowMobEquipmentTask(
@@ -312,6 +315,4 @@ class EventListener implements Listener {
         }
         return false;
     }
-
-
 }

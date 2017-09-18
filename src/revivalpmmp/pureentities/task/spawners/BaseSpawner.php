@@ -65,7 +65,7 @@ use revivalpmmp\pureentities\PureEntities;
  */
 abstract class BaseSpawner {
 
-    // stores all heights of mobs for spwaning reasons
+    // stores all heights of mobs for spawning reasons
     const HEIGHTS = array(
         Bat::NETWORK_ID => 0.3,
         Squid::NETWORK_ID => 0.95,
@@ -135,7 +135,7 @@ abstract class BaseSpawner {
         }
         $count = 0;
         foreach ($level->getEntities() as $entity) { // check all entities in given level
-            if ($entity->isAlive() and !$entity->closed and $entity::NETWORK_ID == $this->getEntityNetworkId()) { // count only alive, not closed and desired entities
+            if ($entity->isAlive() and !$entity->isClosed() and $entity::NETWORK_ID == $this->getEntityNetworkId()) { // count only alive, not closed and desired entities
                 $count++;
             }
         }

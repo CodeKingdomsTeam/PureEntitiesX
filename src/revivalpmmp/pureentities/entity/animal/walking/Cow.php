@@ -70,7 +70,7 @@ class Cow extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, IntfCa
         return 1.0;
     }
 
-    public function getName() {
+    public function getName(): string {
         return "Cow";
     }
 
@@ -84,7 +84,7 @@ class Cow extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, IntfCa
     }
 
     /**
-     * Returns the appropiate NetworkID associated with this entity
+     * Returns the appropriate NetworkID associated with this entity
      * @return int
      */
     public function getNetworkId() {
@@ -100,7 +100,7 @@ class Cow extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, IntfCa
         return $this->feedableItems;
     }
 
-    public function getDrops() {
+    public function getDrops(): array {
         $drops = [];
         if ($this->isLootDropAllowed()) {
             array_push($drops, Item::get(Item::LEATHER, 0, mt_rand(0, 2)));
@@ -113,7 +113,7 @@ class Cow extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, IntfCa
         return $drops;
     }
 
-    public function getMaxHealth() {
+    public function getMaxHealth() : int{
         return 10;
     }
 

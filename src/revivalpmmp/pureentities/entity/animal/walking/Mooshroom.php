@@ -52,7 +52,7 @@ class Mooshroom extends WalkingAnimal implements IntfCanBreed, IntfCanInteract {
         return $this->speed;
     }
 
-    public function getName() {
+    public function getName(): string {
         return "Mooshroom";
     }
 
@@ -71,7 +71,7 @@ class Mooshroom extends WalkingAnimal implements IntfCanBreed, IntfCanInteract {
     }
 
     /**
-     * Returns the appropiate NetworkID associated with this entity
+     * Returns the appropriate NetworkID associated with this entity
      * @return int
      */
     public function getNetworkId() {
@@ -87,7 +87,7 @@ class Mooshroom extends WalkingAnimal implements IntfCanBreed, IntfCanInteract {
         return $this->feedableItems;
     }
 
-    public function getDrops() {
+    public function getDrops(): array {
         $drops = [];
         if ($this->isLootDropAllowed()) {
             array_push($drops, Item::get(Item::LEATHER, 0, mt_rand(0, 2)));
@@ -100,7 +100,7 @@ class Mooshroom extends WalkingAnimal implements IntfCanBreed, IntfCanInteract {
         return $drops;
     }
 
-    public function getMaxHealth() {
+    public function getMaxHealth() : int{
         return 10;
     }
 

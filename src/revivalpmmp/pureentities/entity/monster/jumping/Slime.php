@@ -26,6 +26,7 @@ use pocketmine\item\Item;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\entity\Creature;
 use revivalpmmp\pureentities\data\Data;
+use revivalpmmp\pureentities\utils\MobDamageCalculator;
 
 class Slime extends JumpingMonster {
     const NETWORK_ID = Data::SLIME;
@@ -39,7 +40,7 @@ class Slime extends JumpingMonster {
         return $this->speed;
     }
 
-    public function getName() {
+    public function getName(): string {
         return "Slime";
     }
 
@@ -49,12 +50,18 @@ class Slime extends JumpingMonster {
         $this->setDamage([0, 2, 2, 3]);
     }
 
+    /**
+     * Attack a player
+     *
+     * @param Entity $player
+     */
     public function attackEntity(Entity $player) {
         if ($this->attackDelay > 10 && $this->distanceSquared($player) < 2) {
             $this->attackDelay = 0;
 
-            $ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $this->getDamage());
-            $player->attack($ev->getFinalDamage(), $ev);
+            $ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK,
+                MobDamageCalculator::calculateFinalDamage($player, $this->getDamage()));
+            $player->attack($ev);
 
             $this->checkTamedMobsAttack($player);
         }
@@ -67,7 +74,7 @@ class Slime extends JumpingMonster {
         return false;
     }
 
-    public function getDrops() {
+    public function getDrops(): array {
         if ($this->isLootDropAllowed()) {
             return [Item::get(Item::SLIMEBALL, 0, mt_rand(0, 2))];
         } else {
@@ -75,7 +82,7 @@ class Slime extends JumpingMonster {
         }
     }
 
-    public function getMaxHealth() {
+    public function getMaxHealth() : int{
         return 4;
     }
 

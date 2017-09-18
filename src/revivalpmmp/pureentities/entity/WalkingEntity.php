@@ -19,7 +19,7 @@
 namespace revivalpmmp\pureentities\entity;
 
 use pocketmine\block\Block;
-use pocketmine\block\Slab;
+use pocketmine\block\StoneSlab;
 use pocketmine\block\Stair;
 use pocketmine\block\Torch;
 use pocketmine\entity\Item;
@@ -148,10 +148,11 @@ abstract class WalkingEntity extends BaseEntity {
                 $this->yaw = -atan2($x / $diff, $z / $diff) * 180 / M_PI;
             }
             $this->pitch = $y == 0 ? 0 : rad2deg(-atan2($y, sqrt($x ** 2 + $z ** 2)));
-        } else if ($this->getBaseTarget() instanceof Item and $this instanceof IntfCanEquip) { // mob equipment
+        } else if (($target = $this->getBaseTarget()) instanceof Item and $this instanceof IntfCanEquip) { // mob equipment
             $distance = $this->distanceSquared($this->getBaseTarget());
             if ($distance <= 1.5) {
-                $this->getMobEquipment()->itemReached($this->getBaseTarget());
+                /** @var Item $target */
+                $this->getMobEquipment()->itemReached($target);
             }
         }
 
@@ -210,7 +211,7 @@ abstract class WalkingEntity extends BaseEntity {
             }
         }
 
-        if ($this->motionY > 0.1 or $this->stayTime > 0) { // when entites are "hunting" they sometimes have a really small y motion (lesser than 0.1) so we've to take this into account
+        if ($this->motionY > 0.1 or $this->stayTime > 0) { // when entities are "hunting" they sometimes have a really small y motion (lesser than 0.1) so we've to take this into account
             PureEntities::logOutput("$this: checkJump(): onGround:" . $this->isOnGround() . ", stayTime:" . $this->stayTime . ", motionY:" . $this->motionY);
             return false;
         }
@@ -233,7 +234,7 @@ abstract class WalkingEntity extends BaseEntity {
             // we cannot pass through the block that is directly in front of entity - check if jumping is possible
             $upperBlock = $this->getLevel()->getBlock($blockingBlock->add(0, 1, 0));
             $secondUpperBlock = $this->getLevel()->getBlock($blockingBlock->add(0, 2, 0));
-            PureEntities::logOutput("$this: checkJump(): block in front is $blockingBlock, upperBlock is $upperBlock, secondUpperblock is $secondUpperBlock");
+            PureEntities::logOutput("$this: checkJump(): block in front is $blockingBlock, upperBlock is $upperBlock, second Upper block is $secondUpperBlock");
             // check if we can get through the upper of the block directly in front of the entity
             if ($upperBlock->canPassThrough() && $secondUpperBlock->canPassThrough()) {
                 if ( $blockingBlock instanceof Torch ) {
@@ -244,7 +245,7 @@ abstract class WalkingEntity extends BaseEntity {
                 } else if ($blockingBlock instanceof Fence || $blockingBlock instanceof FenceGate) { // cannot pass fence or fence gate ...
                     $this->motionY = $this->gravity;
                     PureEntities::logOutput("$this: checkJump(): found fence or fence gate!", PureEntities::DEBUG);
-                } else if ($blockingBlock instanceof Slab or $blockingBlock instanceof Stair) { // on stairs entities shouldnt jump THAT high
+                } else if ($blockingBlock instanceof StoneSlab or $blockingBlock instanceof Stair) { // on stairs entities shouldn't jump THAT high
                     $this->motionY = $this->gravity * 4;
                     PureEntities::logOutput("$this: checkJump(): found slab or stair!", PureEntities::DEBUG);
                 } else if ($this->motionY <= ($this->gravity * 4)) {
@@ -256,7 +257,7 @@ abstract class WalkingEntity extends BaseEntity {
                 }
                 return true;
             } else {
-                PureEntities::logOutput("$this: checkJump(): cannot pass throug the upper blocks!", PureEntities::DEBUG);
+                PureEntities::logOutput("$this: checkJump(): cannot pass through the upper blocks!", PureEntities::DEBUG);
             }
         } else {
             PureEntities::logOutput("$this: checkJump(): no need to jump. Block can be passed! [canPassThrough:" . $blockingBlock->canPassThrough() . "] " .

@@ -25,6 +25,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\Player;
 use revivalpmmp\pureentities\data\Data;
+use revivalpmmp\pureentities\utils\MobDamageCalculator;
 
 class Spider extends WalkingMonster {
     const NETWORK_ID = Data::SPIDER;
@@ -44,22 +45,28 @@ class Spider extends WalkingMonster {
         $this->setDamage([0, 2, 2, 3]);
     }
 
-    public function getName() {
+    public function getName(): string {
         return "Spider";
     }
 
+    /**
+     * Attack a player
+     *
+     * @param Entity $player
+     */
     public function attackEntity(Entity $player) {
         if ($this->attackDelay > 10 && (($this->isFriendly() && !($player instanceof Player)) || !$this->isFriendly())) {
             $this->attackDelay = 0;
 
-            $ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $this->getDamage());
-            $player->attack($ev->getFinalDamage(), $ev);
+            $ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK,
+                MobDamageCalculator::calculateFinalDamage($player, $this->getDamage()));
+            $player->attack($ev);
 
             $this->checkTamedMobsAttack($player);
         }
     }
 
-    public function getDrops() {
+    public function getDrops(): array {
         $drops = [];
         if ($this->isLootDropAllowed()) {
             array_push($drops, Item::get(Item::STRING, 0, mt_rand(0, 2)));
@@ -72,7 +79,7 @@ class Spider extends WalkingMonster {
         return $drops;
     }
 
-    public function getMaxHealth() {
+    public function getMaxHealth() : int{
         return 16;
     }
 

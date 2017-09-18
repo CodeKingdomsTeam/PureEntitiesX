@@ -18,6 +18,7 @@
 
 namespace revivalpmmp\pureentities\entity\monster\walking;
 
+use pocketmine\event\entity\ExplosionPrimeEvent;
 use revivalpmmp\pureentities\entity\monster\WalkingMonster;
 use pocketmine\entity\Creature;
 use pocketmine\entity\Entity;
@@ -26,7 +27,6 @@ use pocketmine\level\Explosion;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\item\Item;
 use revivalpmmp\pureentities\data\Data;
-use revivalpmmp\pureentities\event\ExplosionPrimeEvent;
 use revivalpmmp\pureentities\PluginConfiguration;
 use revivalpmmp\pureentities\PureEntities;
 
@@ -89,7 +89,7 @@ class Creeper extends WalkingMonster implements Explosive {
         }
     }
 
-    public function getName() {
+    public function getName(): string {
         return "Creeper";
     }
 
@@ -107,7 +107,7 @@ class Creeper extends WalkingMonster implements Explosive {
         }
     }
 
-    public function onUpdate($currentTick) {
+    public function onUpdate(int $currentTick): bool {
         $tickDiff = $currentTick - $this->lastUpdate;
 
         if ($this->getBaseTarget() !== null) {
@@ -145,7 +145,7 @@ class Creeper extends WalkingMonster implements Explosive {
         // the creeper doesn't attack - it simply explodes
     }
 
-    public function getDrops() {
+    public function getDrops(): array {
         if ($this->isLootDropAllowed()) {
             return [Item::get(Item::GUNPOWDER, 0, mt_rand(0, 2))];
         } else {
@@ -153,7 +153,7 @@ class Creeper extends WalkingMonster implements Explosive {
         }
     }
 
-    public function getMaxHealth() {
+    public function getMaxHealth() : int{
         return 20;
     }
 

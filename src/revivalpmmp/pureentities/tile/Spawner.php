@@ -20,13 +20,11 @@ namespace revivalpmmp\pureentities\tile;
 
 use pocketmine\level\Level;
 use pocketmine\Player;
-use pocketmine\tile\Tile;
 use revivalpmmp\pureentities\PluginConfiguration;
 use revivalpmmp\pureentities\PureEntities;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\tile\Spawnable;
 use revivalpmmp\pureentities\task\spawners\BaseSpawner;
 
@@ -96,7 +94,7 @@ class Spawner extends Spawnable {
         $this->scheduleUpdate();
     }
 
-    public function onUpdate() {
+    public function onUpdate(): bool {
         if ($this->closed) {
             return false;
         }
@@ -146,13 +144,6 @@ class Spawner extends Spawnable {
         }
     }
 
-    public function getSpawnCompound() {
-        return new CompoundTag("", [
-            new StringTag("id", Tile::MOB_SPAWNER),
-            new IntTag("EntityId", $this->entityId)
-        ]);
-    }
-
     public function setSpawnEntityType(int $entityId) {
         $this->entityId = $entityId;
         if (PluginConfiguration::getInstance()->getEnableNBT()) {
@@ -195,6 +186,10 @@ class Spawner extends Spawnable {
 
     public function setMaxNearbyEntities(int $count) {
         $this->maxNearbyEntities = $count;
+    }
+
+    public function addAdditionalSpawnData(CompoundTag $nbt) {
+        $nbt["EntityId"] = $this->entityId;
     }
 
 }

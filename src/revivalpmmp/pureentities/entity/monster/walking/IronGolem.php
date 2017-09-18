@@ -27,6 +27,7 @@ use pocketmine\math\Vector3;
 use pocketmine\entity\Creature;
 use pocketmine\Player;
 use revivalpmmp\pureentities\data\Data;
+use revivalpmmp\pureentities\utils\MobDamageCalculator;
 
 class IronGolem extends WalkingMonster {
     const NETWORK_ID = Data::IRON_GOLEM;
@@ -50,16 +51,22 @@ class IronGolem extends WalkingMonster {
         $this->setMinDamage([0, 7, 7, 7]);
     }
 
-    public function getName() {
+    public function getName(): string {
         return "IronGolem";
     }
 
+    /**
+     * Attack a player
+     *
+     * @param Entity $player
+     */
     public function attackEntity(Entity $player) {
         if ($this->attackDelay > 10 && $this->distanceSquared($player) < 4) {
             $this->attackDelay = 0;
 
-            $ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $this->getDamage());
-            $player->attack($ev->getFinalDamage(), $ev);
+            $ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK,
+                MobDamageCalculator::calculateFinalDamage($player, $this->getDamage()));
+            $player->attack($ev);
             $player->setMotion(new Vector3(0, 0.7, 0));
 
             $this->checkTamedMobsAttack($player);
@@ -73,7 +80,7 @@ class IronGolem extends WalkingMonster {
         return false;
     }
 
-    public function getDrops() {
+    public function getDrops(): array {
         $drops = [];
         if ($this->isLootDropAllowed()) {
             array_push($drops, Item::get(Item::IRON_INGOT, 0, mt_rand(3, 5)));
@@ -82,7 +89,7 @@ class IronGolem extends WalkingMonster {
         return $drops;
     }
 
-    public function getMaxHealth() {
+    public function getMaxHealth() : int{
         return 20;
     }
 

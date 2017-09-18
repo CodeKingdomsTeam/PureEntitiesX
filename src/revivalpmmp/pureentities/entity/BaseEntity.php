@@ -221,24 +221,11 @@ abstract class BaseEntity extends Creature {
         }
     }
 
-    public function updateMovement() {
-        if (
-            $this->lastX !== $this->x
-            || $this->lastY !== $this->y
-            || $this->lastZ !== $this->z
-            || $this->lastYaw !== $this->yaw
-            || $this->lastPitch !== $this->pitch
-        ) {
-            $this->lastX = $this->x;
-            $this->lastY = $this->y;
-            $this->lastZ = $this->z;
-            $this->lastYaw = $this->yaw;
-            $this->lastPitch = $this->pitch;
-        }
-        $this->level->addEntityMovement($this->chunk->getX(), $this->chunk->getZ(), $this->id, $this->x, $this->y, $this->z, $this->yaw, $this->pitch);
+    public function updateMovement(){
+        parent::updateMovement();
     }
 
-    public function isInsideOfSolid() {
+    public function isInsideOfSolid(): bool {
         $block = $this->level->getBlock($this->temporalVector->setComponents(Math::floorFloat($this->x), Math::floorFloat($this->y + $this->height - 0.18), Math::floorFloat($this->z)));
         $bb = $block->getBoundingBox();
         return $bb !== null and $block->isSolid() and !$block->isTransparent() and $bb->intersectsWith($this->getBoundingBox());
@@ -247,16 +234,15 @@ abstract class BaseEntity extends Creature {
     /**
      * Entity gets attacked by another entity / explosion or something similar
      *
-     * @param float $damage the damage coming in
      * @param EntityDamageEvent $source the damage event
      */
-    public function attack($damage, EntityDamageEvent $source) {
+    public function attack(EntityDamageEvent $source) {
         if ($this->isKnockback() > 0) return;
 
         // "wake up" entity - it gets attacked!
         $this->idlingComponent->stopIdling(1, true);
 
-        parent::attack($damage, $source);
+        parent::attack($source);
 
         if ($source->isCancelled() || !($source instanceof EntityDamageByEntityEvent)) {
             return;
@@ -284,11 +270,11 @@ abstract class BaseEntity extends Creature {
         $this->checkAttackByTamedEntities($source);
     }
 
-    public function knockBack(Entity $attacker, $damage, $x, $z, $base = 0.4) {
+    public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4) {
 
     }
 
-    public function entityBaseTick($tickDiff = 1, $EnchantL = 0) {
+    public function entityBaseTick(int $tickDiff = 1): bool {
         Timings::$timerEntityBaseTick->startTiming();
 
         $hasUpdate = Entity::entityBaseTick($tickDiff);
@@ -296,7 +282,7 @@ abstract class BaseEntity extends Creature {
         if ($this->isInsideOfSolid()) {
             $hasUpdate = true;
             $ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1);
-            $this->attack($ev->getFinalDamage(), $ev);
+            $this->attack($ev);
         }
 
         if ($this->moveTime > 0) {
@@ -335,7 +321,7 @@ abstract class BaseEntity extends Creature {
         return false;
     }
 
-    public function move($dx, $dy, $dz): bool {
+    public function move(float $dx, float $dy, float $dz): bool {
         Timings::$entityMoveTimer->startTiming();
 
         $movX = $dx;
@@ -391,7 +377,7 @@ abstract class BaseEntity extends Creature {
      * @param EntityDamageEvent $source the event that has been raised
      */
     protected function checkAttackByTamedEntities(EntityDamageEvent $source) {
-        // next: if the player has any tamed entities - they will attack this entitiy too - but only when not already
+        // next: if the player has any tamed entities - they will attack this entity too - but only when not already
         // having a valid monster target
         if ($source instanceof EntityDamageByEntityEvent) {
             $attackedBy = $source->getDamager();
@@ -408,7 +394,7 @@ abstract class BaseEntity extends Creature {
                         if ($this instanceof IntfTameable and $this->isTamed() and
                             strcasecmp($this->getOwner()->getName(), $attackedBy->getName()) == 0
                         ) {
-                            // this entity belongs to the player. other tamed mobs shouldnt attack!
+                            // this entity belongs to the player. other tamed mobs shouldn't attack!
                             continue;
                         }
                         /**

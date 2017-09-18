@@ -39,6 +39,7 @@ use revivalpmmp\pureentities\features\IntfTameable;
 use revivalpmmp\pureentities\PluginConfiguration;
 use revivalpmmp\pureentities\PureEntities;
 use revivalpmmp\pureentities\data\Data;
+use revivalpmmp\pureentities\utils\MobDamageCalculator;
 
 class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCanInteract {
     const NETWORK_ID = Data::WOLF;
@@ -131,7 +132,6 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
         $this->loadFromNBT();
 
         $this->setAngry($this->isAngry() ? $this->angryValue : 0, true);
-        $this->setSitting($this->isSitting());
         $this->setTamed($this->isTamed());
         if ($this->isTamed()) {
             $this->mapOwner();
@@ -156,7 +156,7 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
     }
 
     /**
-     * Returns the appropiate NetworkID associated with this entity
+     * Returns the appropriate NetworkID associated with this entity
      * @return int
      */
     public function getNetworkId() {
@@ -182,7 +182,7 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
     }
 
 
-    public function getName() {
+    public function getName(): string {
         return "Wolf";
     }
 
@@ -191,23 +191,22 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
      * wolf is tamed and has to teleport to the owner when more than 12 blocks away)
      *
      * @param int $tickDiff
-     * @param int $EnchantL
      * @return bool
      */
-    public function entityBaseTick($tickDiff = 1, $EnchantL = 0) {
+    public function entityBaseTick(int $tickDiff = 1): bool {
         $this->checkFollowOwner();
-        return parent::entityBaseTick($tickDiff, $EnchantL);
+        return parent::entityBaseTick($tickDiff);
     }
 
     /**
-     * We need to override this function as the wolf is hunting for skeletons, rabbits and sheeps when not tamed and wild.
+     * We need to override this function as the wolf is hunting for skeletons, rabbits and sheep when not tamed and wild.
      * When tamed and no other target is set (or is following player) the tamed wolf attack only skeletons!
      * @param bool $checkSkip
      */
     public function checkTarget(bool $checkSkip = true) {
         if (($checkSkip and $this->isCheckTargetAllowedBySkip()) or !$checkSkip) {
             if (!$this->isTamed() and !$this->getBaseTarget() instanceof Monster) {
-                // is there any entity around that is attackable (skeletons, rabbits, sheeps)
+                // is there any entity around that is attackable (skeletons, rabbits, sheep)
                 foreach ($this->getLevel()->getNearbyEntities($this->boundingBox->grow(10, 10, 10), $this) as $entity) {
                     if ($entity instanceof Skeleton or $entity instanceof Rabbit or $entity instanceof Sheep and
                         $entity->isAlive()
@@ -217,7 +216,7 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
                     }
                 }
             }
-            return parent::checkTarget(false);
+            parent::checkTarget(false);
         }
     }
 
@@ -315,12 +314,10 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
     /**
      * Wolf gets attacked ...
      *
-     * @param float $damage
      * @param EntityDamageEvent $source
-     * @return mixed
      */
-    public function attack($damage, EntityDamageEvent $source) {
-        parent::attack($damage, $source);
+    public function attack(EntityDamageEvent $source) {
+        parent::attack($source);
 
         if (!$source->isCancelled()) {
             // when this is tamed and the owner attacks, the wolf doesn't get angry
@@ -348,18 +345,19 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
         if ($this->attackDelay > 10 && $this->distanceSquared($player) < 1.6) {
             $this->attackDelay = 0;
 
-            $ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $this->getDamage());
-            $player->attack($ev->getFinalDamage(), $ev);
+            $ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK,
+                MobDamageCalculator::calculateFinalDamage($player, $this->getDamage()));
+            $player->attack($ev);
 
             $this->checkTamedMobsAttack($player);
         }
     }
 
-    public function getDrops() {
+    public function getDrops(): array {
         return [];
     }
 
-    public function getMaxHealth() {
+    public function getMaxHealth() : int{
         return 8; // but only for wild ones, tamed ones: 20
     }
 
@@ -374,7 +372,11 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
      * @return bool
      */
     public function tame(Player $player): bool {
-        $tameSuccess = mt_rand(0, 2) === 0; // 1/3 chance of taiming succeeds
+        // This shouldn't be necessary but just in case...
+        if ($this->isTamed()) {
+            return null;
+        }
+        $tameSuccess = mt_rand(0, 2) === 0; // 1/3 chance of taming succeeds
         $itemInHand = $player->getInventory()->getItemInHand();
         if ($itemInHand != null) {
             $player->getInventory()->getItemInHand()->setCount($itemInHand->getCount() - 1);
@@ -411,6 +413,7 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
         } else {
             $this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_TAMED, false); // set not tamed
         }
+        $this->tamed = $tamed;
     }
 
     /**
@@ -456,9 +459,23 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
      * Set the wolf sitting or not
      * @param bool $sit
      */
-    public function setSitting(bool $sit) {
-        $this->sitting = $sit;
-        $this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SITTING, $sit);
+    public function setSitting(bool $sit=null) {
+        PureEntities::logOutput("$this: setSitting called", PureEntities::DEBUG);
+
+        if (!($sit === null)) {
+            $this->sitting = $sit;
+            $this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SITTING, $sit);
+        }
+
+        elseif ($this->sitting) {
+            $this->sitting = false;
+            $this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SITTING, false);
+        }
+        else {
+            $this->sitting = true;
+            $this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SITTING, true);
+        }
+
     }
 
     /**

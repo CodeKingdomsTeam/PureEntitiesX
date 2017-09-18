@@ -32,6 +32,7 @@ use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\features\IntfCanBreed;
 use revivalpmmp\pureentities\features\IntfCanEquip;
 use revivalpmmp\pureentities\PureEntities;
+use revivalpmmp\pureentities\utils\MobDamageCalculator;
 
 class Zombie extends WalkingMonster implements IntfCanEquip, IntfCanBreed {
     const NETWORK_ID = Data::ZOMBIE;
@@ -86,7 +87,7 @@ class Zombie extends WalkingMonster implements IntfCanEquip, IntfCanBreed {
     }
 
     /**
-     * Returns the appropiate NetworkID associated with this entity
+     * Returns the appropriate NetworkID associated with this entity
      * @return int
      */
     public function getNetworkId() {
@@ -102,11 +103,11 @@ class Zombie extends WalkingMonster implements IntfCanEquip, IntfCanBreed {
         return []; // return an empty array - a zombie is not feedable
     }
 
-    public function getName() {
+    public function getName(): string {
         return "Zombie";
     }
 
-    public function setHealth($amount) {
+    public function setHealth(float $amount) {
         parent::setHealth($amount);
 
         if ($this->isAlive()) {
@@ -125,11 +126,10 @@ class Zombie extends WalkingMonster implements IntfCanEquip, IntfCanBreed {
     /**
      * Zombie gets attacked. We need to recalculate the damage done with reducing the damage by armor type.
      *
-     * @param float $damage
      * @param EntityDamageEvent $source
-     * @return mixed
      */
-    public function attack($damage, EntityDamageEvent $source) {
+    public function attack(EntityDamageEvent $source) {
+        $damage = $this->getDamage();
         PureEntities::logOutput("$this: attacked with original damage of $damage", PureEntities::DEBUG);
         $reduceDamagePercent = 0;
         if ($this->getMobEquipment() !== null) {
@@ -143,7 +143,7 @@ class Zombie extends WalkingMonster implements IntfCanEquip, IntfCanBreed {
 
         PureEntities::logOutput("$this: attacked with final damage of $damage", PureEntities::DEBUG);
 
-        return parent::attack($damage, $source);
+        parent::attack($source);
     }
 
     /**
@@ -160,14 +160,15 @@ class Zombie extends WalkingMonster implements IntfCanEquip, IntfCanBreed {
             if ($this->getMobEquipment() !== null) {
                 $damage = $damage + $this->getMobEquipment()->getWeaponDamageToAdd();
             }
-            $ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $damage);
-            $player->attack($ev->getFinalDamage(), $ev);
+            $ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK,
+                MobDamageCalculator::calculateFinalDamage($player, $damage));
+            $player->attack($ev);
 
             $this->checkTamedMobsAttack($player);
         }
     }
 
-    public function entityBaseTick($tickDiff = 1, $EnchantL = 0) {
+    public function entityBaseTick(int $tickDiff = 1): bool {
         Timings::$timerEntityBaseTick->startTiming();
 
         $this->getMobEquipment()->entityBaseTick($tickDiff);
@@ -185,7 +186,7 @@ class Zombie extends WalkingMonster implements IntfCanEquip, IntfCanBreed {
         return $hasUpdate;
     }
 
-    public function getDrops() {
+    public function getDrops(): array {
         $drops = [];
         if ($this->isLootDropAllowed()) {
             array_push($drops, Item::get(Item::ROTTEN_FLESH, 0, mt_rand(0, 2)));
@@ -208,7 +209,7 @@ class Zombie extends WalkingMonster implements IntfCanEquip, IntfCanBreed {
         return $drops;
     }
 
-    public function getMaxHealth() {
+    public function getMaxHealth() : int{
         return 20;
     }
 

@@ -104,7 +104,7 @@ abstract class FlyingMonster extends FlyingEntity implements Monster {
         }
     }
 
-    public function onUpdate($currentTick) {
+    public function onUpdate(int $currentTick): bool {
         if ($this->server->getDifficulty() < 1) {
             $this->close();
             return false;
@@ -134,7 +134,7 @@ abstract class FlyingMonster extends FlyingEntity implements Monster {
         return true;
     }
 
-    public function entityBaseTick($tickDiff = 1, $EnchantL = 0) {
+    public function entityBaseTick(int $tickDiff = 1): bool {
         Timings::$timerEntityBaseTick->startTiming();
 
         $hasUpdate = parent::entityBaseTick($tickDiff);
@@ -146,7 +146,7 @@ abstract class FlyingMonster extends FlyingEntity implements Monster {
             if ($airTicks <= -20) {
                 $airTicks = 0;
                 $ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
-                $this->attack($ev->getFinalDamage(), $ev);
+                $this->attack($ev);
             }
             $this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $airTicks);
         } else {

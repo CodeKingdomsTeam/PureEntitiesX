@@ -112,13 +112,6 @@ class BreedingComponent {
     /**
      * Is initialized from entity, when it's constructed
      *
-     * @var int
-     */
-    private $adultLength = -1;
-
-    /**
-     * Is initialited from entity, when it's constructed
-     *
      * @var float
      */
     private $adultSpeed = 0.0;
@@ -139,9 +132,8 @@ class BreedingComponent {
         $this->entity = $belongsTo;
         $this->adultHeight = $belongsTo->height;
         $this->adultWidth = $belongsTo->width;
-        $this->adultLength = $belongsTo->length;
         $this->adultSpeed = $belongsTo->getSpeed();
-        $this->emitLoveParticles = PluginConfiguration::getInstance()->getEmitLoveParticlesCostantly();
+        $this->emitLoveParticles = PluginConfiguration::getInstance()->getEmitLoveParticlesConstantly();
     }
 
     public function loadFromNBT() {
@@ -234,7 +226,7 @@ class BreedingComponent {
     /**
      * Sets the age of the entity. Setting this to a number lesser 0 means it's a baby and
      * it also defines how many ticks it takes to grow up to an adult (e.g.: -1000 means it takes 1000 ticks until the
-     * entity is grown up - can be speed up with WEAT)
+     * entity is grown up - can be sped up with wheat)
      *
      * @param int $age
      */
@@ -250,7 +242,6 @@ class BreedingComponent {
                 // we also need to adjust the height and width of the entity
                 $this->entity->height = $this->adultHeight / 2; // because we scale 0.5
                 $this->entity->width = $this->adultWidth / 2; // because we scale 0.5
-                $this->entity->length = $this->adultLength / 2; // because we scale 0.5
                 $this->entity->speed = $this->adultSpeed * 1.5; // because baby entities are faster
             }
         } else {
@@ -262,7 +253,6 @@ class BreedingComponent {
                 // reset entity sizes
                 $this->entity->height = $this->adultHeight;
                 $this->entity->width = $this->adultWidth;
-                $this->entity->length = $this->adultLength;
                 $this->entity->speed = $this->adultSpeed;
             }
             // forget the parent and reset baseTarget immediately
@@ -303,7 +293,7 @@ class BreedingComponent {
     public function setInLove(int $inLoveTicks) {
         $this->inLove = $inLoveTicks;
         if ($this->getInLove() > 0) {
-            $this->entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INLOVE, true); // set client "inlove"
+            $this->entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INLOVE, true); // set client "in love"
         } else {
             $this->entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INLOVE, false); // send client not "in love" anymore
         }
@@ -403,7 +393,7 @@ class BreedingComponent {
      * @param Entity $partner
      */
     private function breed(Entity $partner) {
-        // yeah we found ourselfes - now breed and reset target
+        // yeah we found ourselves - now breed and reset target
         $this->resetBreedStatus();
         /**
          * @var $partner Entity|BaseEntity|IntfCanBreed
@@ -455,14 +445,14 @@ class BreedingComponent {
             $player->dataPacket($pk);
             return false;
         }
-        if ($this->isBaby()) { // when a baby gets fed with weat, it grows up a little faster
+        if ($this->isBaby()) { // when a baby gets fed with wheat, it grows up a little faster
             $age = $this->getAge();
             $age += self::FEED_INCREASE_AGE;
             $this->setAge($age);
         } else {
             // this makes the entity fall in love - and search for a partner ...
             $this->setInLove(self::DEFAULT_IN_LOVE_TICKS);
-            // checkTarget method recognizes the "inlove" and tries to find a partner
+            // checkTarget method recognizes the "in love" and tries to find a partner
             // when feeding was successful and entity is in love mode emit heart particles (only once for now)
             $pk = new EntityEventPacket();
             $pk->entityRuntimeId = $this->entity->getId();
@@ -483,7 +473,7 @@ class BreedingComponent {
         if ($this->isBaby() and
             $this->getParent() !== null and
             $this->getParent()->isAlive() and
-            !$this->getParent()->closed and
+            !$this->getParent()->isClosed() and
             ($this->entity->getBaseTarget() === null or !$this->entity->getBaseTarget() instanceof Player)
         ) {
             $this->entity->setBaseTarget($this->getParent());

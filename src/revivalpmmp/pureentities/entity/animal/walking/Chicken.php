@@ -37,7 +37,7 @@ class Chicken extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, In
     public $speed = 1.0;
     public $gravity = 0.04; // floating chickens
 
-    // egg laying specific configuration (an egg is layed by a chicken each 6000-120000 ticks)
+    // egg laying specific configuration (an egg is laid by a chicken each 6000-120000 ticks)
     private $dropEggTimer = 0;
     private $dropEggTime = 0;
     const DROP_EGG_DELAY_MIN = 6000;
@@ -79,7 +79,7 @@ class Chicken extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, In
         $this->breedableClass->saveNBT();
     }
 
-    public function getName() {
+    public function getName() : string {
         return "Chicken";
     }
 
@@ -93,7 +93,7 @@ class Chicken extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, In
     }
 
     /**
-     * Returns the appropiate NetworkID associated with this entity
+     * Returns the appropriate NetworkID associated with this entity
      * @return int
      */
     public function getNetworkId() {
@@ -109,7 +109,7 @@ class Chicken extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, In
         return $this->feedableItems;
     }
 
-    public function getDrops() {
+    public function getDrops(): array {
         $drops = [];
 
         if ($this->isLootDropAllowed()) {
@@ -126,13 +126,13 @@ class Chicken extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, In
         return $drops;
     }
 
-    public function getMaxHealth() {
+    public function getMaxHealth() : int{
         return 4;
     }
 
 
     // ----- functionality to lay an eg ... -------------
-    public function entityBaseTick($tickDiff = 1, $EnchantL = 0) {
+    public function entityBaseTick(int $tickDiff = 1): bool {
         if ($this->dropEggTime === 0) {
             $this->dropEggTime = mt_rand(self::DROP_EGG_DELAY_MIN, self::DROP_EGG_DELAY_MAX);
         }
@@ -144,6 +144,7 @@ class Chicken extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, In
         }
 
         parent::entityBaseTick($tickDiff);
+        return true;
     }
 
     private function layEgg() {

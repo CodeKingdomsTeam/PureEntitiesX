@@ -24,7 +24,7 @@ use revivalpmmp\pureentities\entity\monster\FlyingMonster;
 use revivalpmmp\pureentities\entity\projectile\FireBall;
 use revivalpmmp\pureentities\PureEntities;
 use pocketmine\block\Liquid;
-use pocketmine\block\Slab;
+use pocketmine\block\StoneSlab;
 use pocketmine\block\Stair;
 use pocketmine\entity\Creature;
 use pocketmine\entity\Entity;
@@ -63,7 +63,7 @@ class Blaze extends FlyingMonster implements ProjectileSource {
         $this->floatingHeight = mt_rand() / mt_getrandmax() * 2 + 1;
     }
 
-    public function getName() {
+    public function getName(): string {
         return "Blaze";
     }
 
@@ -138,7 +138,7 @@ class Blaze extends FlyingMonster implements ProjectileSource {
         }
 
         $block = $this->level->getBlock($this->add($dx, 0, $dz));
-        if ($block instanceof Slab || $block instanceof Stair) {
+        if ($block instanceof StoneSlab || $block instanceof Stair) {
             $this->motionY = 0.5;
             return true;
         }
@@ -217,8 +217,13 @@ class Blaze extends FlyingMonster implements ProjectileSource {
         return $this->getBaseTarget();
     }
 
+    /**
+     * Attack the player
+     *
+     * @param Entity $player
+     */
     public function attackEntity(Entity $player) {
-        if ($this->attackDelay > 20 && mt_rand(1, 32) < 4 && $this->distance($player) <= 18) {
+        if ($this->attackDelay > 20 && $this->distance($player) <= 18) {
             $this->attackDelay = 0;
 
             $f = 1.2;
@@ -257,7 +262,7 @@ class Blaze extends FlyingMonster implements ProjectileSource {
         }
     }
 
-    public function getDrops() {
+    public function getDrops(): array {
         if ($this->isLootDropAllowed()) {
             return [Item::get(Item::BLAZE_ROD, 0, mt_rand(0, 1))];
         } else {
