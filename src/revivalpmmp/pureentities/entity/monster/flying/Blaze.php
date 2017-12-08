@@ -70,11 +70,15 @@ class Blaze extends FlyingMonster implements ProjectileSource{
 			if(!($target instanceof Creature) or !$this->targetOption($target, $this->distanceSquared($target))){
 				$near = PHP_INT_MAX;
 				foreach($this->getLevel()->getEntities() as $creature){
-					if($creature === $this || !($creature instanceof Creature) || $creature instanceof Animal){
+					/*if($creature === $this || !($creature instanceof Creature) || $creature instanceof Animal){
+						continue;
+					}*/
+
+					if($creature instanceof BaseEntity && $creature->isFriendly() == $this->isFriendly()){
 						continue;
 					}
 
-					if($creature instanceof BaseEntity && $creature->isFriendly() == $this->isFriendly()){
+					if(!($creature instanceof Player)){
 						continue;
 					}
 
