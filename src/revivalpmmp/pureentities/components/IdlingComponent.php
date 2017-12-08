@@ -106,7 +106,7 @@ class IdlingComponent{
 	public function checkAndSetIdling() : bool{
 		$setToIdle = false;
 		if(!$this->idling and // of course it should not idle currently
-			($this->baseEntity instanceof IntfCanBreed and $this->baseEntity->getBreedingComponent()->getInLove() <= 0) and // do not rest while in love!
+			($this->baseEntity instanceof IntfCanBreed and $this->baseEntity->getBreedingComponent() !== null and $this->baseEntity->getBreedingComponent()->getInLove() <= 0) and // do not rest while in love!
 			!$this->baseEntity->getBaseTarget() instanceof Player and // chasing a player? no idle
 			!$this->baseEntity->getBaseTarget() instanceof Creature and // chasing a creature? no idle!
 			$this->isLastIdleLongEnough() // we do not want idling too often
