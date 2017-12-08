@@ -20,6 +20,7 @@
 
 namespace revivalpmmp\pureentities\entity\projectile;
 
+use pocketmine\level\Position;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\level\Level;
 use pocketmine\level\particle\CriticalParticle;
@@ -34,13 +35,14 @@ use pocketmine\math\Vector3;
 
 abstract class FireBall extends Projectile{
 
-	protected $damage = 4;
+	protected $damage = 2.8;
 
 	protected $drag = 0.01;
 	protected $gravity = 0.05;
 
 	protected $isCritical;
 	protected $canExplode = false;
+	protected $isBlockBreaking = true;
 
 	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null, bool $critical = false){
 		parent::__construct($level, $nbt, $shootingEntity);
@@ -53,6 +55,18 @@ abstract class FireBall extends Projectile{
 
 	public function setExplode(bool $bool){
 		$this->canExplode = $bool;
+	}
+
+	public function isBlockBreaking(): bool {
+		return $this->isBlockBreaking;
+	}
+
+	public function setBlockBreaking(bool $bool) {
+		$this->isBlockBreaking = $bool;
+	}
+
+	public function setDamage(float $damage) {
+		$this->damage = $damage;
 	}
 
 	public function onUpdate(int $currentTick) : bool{
