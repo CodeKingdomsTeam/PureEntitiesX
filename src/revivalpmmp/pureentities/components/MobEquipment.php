@@ -577,13 +577,21 @@ class MobEquipment{
 				$nbt = $this->entity->namedtag->getListTag(NBTConst::NBT_KEY_ARMOR_ITEMS);
 				if($nbt instanceof ListTag){
 					$itemId = $nbt->get(0)->getInt(NBTConst::NBT_KEY_ARMOR_ID);
-					$this->boots = Item::get($itemId);
+					if($itemId !== NULL){
+						$this->boots = Item::get($itemId);
+					}
 					$itemId = $nbt->get(1)->getInt(NBTConst::NBT_KEY_ARMOR_ID);
-					$this->leggings = Item::get($itemId);
+					if($itemId !== NULL){
+						$this->leggings = Item::get($itemId);
+					}
 					$itemId = $nbt->get(2)->getInt(NBTConst::NBT_KEY_ARMOR_ID);
-					$this->chestplate = Item::get($itemId);
+					if($itemId !== NULL){
+						$this->chestplate = Item::get($itemId);
+					}
 					$itemId = $nbt->get(3)->getInt(NBTConst::NBT_KEY_ARMOR_ID);
-					$this->helmet = Item::get($itemId);
+					if($itemId !== NULL){
+						$this->helmet = Item::get($itemId);
+					}
 					PureEntities::logOutput("MobEquipment: loaded from NBT [boots:" . $this->boots . "] [legs:" . $this->leggings . "] " .
 						"[chest:" . $this->chestplate . "] [helmet:" . $this->helmet . "]", PureEntities::DEBUG);
 				}
