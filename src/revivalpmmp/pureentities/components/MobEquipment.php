@@ -575,6 +575,7 @@ class MobEquipment{
 				PureEntities::logOutput("MobEquipment: armorItems set for " . $this->entity, PureEntities::DEBUG);
 				$nbt = $this->entity->namedtag[self::NBT_KEY_ARMOR_ITEMS];
 				if($nbt instanceof ListTag){
+<<<<<<< HEAD
 					$itemId = $nbt[0]["id"];
 					$this->boots = Item::get($itemId);
 					$itemId = $nbt[1]["id"];
@@ -583,6 +584,24 @@ class MobEquipment{
 					$this->chestplate = Item::get($itemId);
 					$itemId = $nbt[3]["id"];
 					$this->helmet = Item::get($itemId);
+=======
+					$itemId = $nbt->get(0)->getInt(NBTConst::NBT_KEY_ARMOR_ID);
+					if($itemId !== NULL){
+						$this->boots = Item::get($itemId);
+					}
+					$itemId = $nbt->get(1)->getInt(NBTConst::NBT_KEY_ARMOR_ID);
+					if($itemId !== NULL){
+						$this->leggings = Item::get($itemId);
+					}
+					$itemId = $nbt->get(2)->getInt(NBTConst::NBT_KEY_ARMOR_ID);
+					if($itemId !== NULL){
+						$this->chestplate = Item::get($itemId);
+					}
+					$itemId = $nbt->get(3)->getInt(NBTConst::NBT_KEY_ARMOR_ID);
+					if($itemId !== NULL){
+						$this->helmet = Item::get($itemId);
+					}
+>>>>>>> Fix MobEquipment crashes
 					PureEntities::logOutput("MobEquipment: loaded from NBT [boots:" . $this->boots . "] [legs:" . $this->leggings . "] " .
 						"[chest:" . $this->chestplate . "] [helmet:" . $this->helmet . "]", PureEntities::DEBUG);
 				}
