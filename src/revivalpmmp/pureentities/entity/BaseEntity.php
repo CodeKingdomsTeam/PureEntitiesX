@@ -470,17 +470,22 @@ abstract class BaseEntity extends Creature{
 	 * @return array
 	 */
 	private function getTamedMobs(Player $player){
+		$level = $player->getLevel();
 		$tamedMobs = [];
 		if($player->isClosed()) return [];
-		foreach($player->getLevel()->getEntities() as $entity){
-			if($entity instanceof IntfTameable and
-				$entity->isTamed() and
-				strcasecmp($entity->getOwner()->getName(), $player->getName()) === 0 and
-				$entity->isAlive()
-			){
-				$tamedMobs[] = $entity;
+
+		if($level !== NULL){
+			foreach($level->getEntities() as $entity){
+				if($entity instanceof IntfTameable and
+					$entity->isTamed() and
+					strcasecmp($entity->getOwner()->getName(), $player->getName()) === 0 and
+					$entity->isAlive()
+				){
+					$tamedMobs[] = $entity;
+				}
 			}
 		}
+
 		return $tamedMobs;
 	}
 
