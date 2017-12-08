@@ -574,13 +574,21 @@ class MobEquipment{
 				$nbt = $this->entity->namedtag[self::NBT_KEY_ARMOR_ITEMS];
 				if($nbt instanceof ListTag){
 					$itemId = $nbt[0]["id"];
-					$this->boots = Item::get($itemId);
+					if($itemId !== NULL){
+						$this->boots = Item::get($itemId);
+					}
 					$itemId = $nbt[1]["id"];
-					$this->leggings = Item::get($itemId);
+					if($itemId !== NULL){
+						$this->leggings = Item::get($itemId);
+					}
 					$itemId = $nbt[2]["id"];
-					$this->chestplate = Item::get($itemId);
+					if($itemId !== NULL){
+						$this->chestplate = Item::get($itemId);
+					}
 					$itemId = $nbt[3]["id"];
-					$this->helmet = Item::get($itemId);
+					if($itemId !== NULL){
+						$this->helmet = Item::get($itemId);
+					}
 					PureEntities::logOutput("MobEquipment: loaded from NBT [boots:" . $this->boots . "] [legs:" . $this->leggings . "] " .
 						"[chest:" . $this->chestplate . "] [helmet:" . $this->helmet . "]", PureEntities::DEBUG);
 				}
