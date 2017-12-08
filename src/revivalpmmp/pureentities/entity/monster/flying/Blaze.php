@@ -51,6 +51,8 @@ class Blaze extends FlyingMonster implements ProjectileSource{
 
 		$this->fireProof = true;
 		$this->setDamage([0, 0, 0, 0]);
+
+		$this->floatingHeight = mt_rand() / mt_getrandmax() * 2 + 1;
 	}
 
 	public function getName() : string{
@@ -151,10 +153,12 @@ class Blaze extends FlyingMonster implements ProjectileSource{
 				$this->motion->z = 0;
 			}else{
 				if($this->getBaseTarget() instanceof Creature){
-					$this->motion->x = 0;
-					$this->motion->z = 0;
-					if($this->distance($this->getBaseTarget()) > $this->y - $this->getLevel()->getHighestBlockAt((int) $this->x, (int) $this->z)){
-						$this->motion->y = $this->gravity;
+					$this->motionX = 0;
+					$this->motionZ = 0;
+					if ($this->y < $this->getBaseTarget()->y + $this->floatingHeight || $this->y < $this->getLevel()->getHighestBlockAt((int)$this->x, (int)$this->z) + $this->floatingHeight) {
+						$this->motionY = $this->gravity;
+					}else if ($this->y > $this->getLevel()->getHighestBlockAt((int)$this->x, (int)$this->z) + $this->floatingHeight + 0.5){
+						$this->motionY = -$this->gravity;
 					}else{
 						$this->motion->y = 0;
 					}
@@ -206,8 +210,8 @@ class Blaze extends FlyingMonster implements ProjectileSource{
 			$this->attackDelay = 0;
 
 			$f = 1.2;
-			$yaw = $this->yaw + mt_rand(-220, 220) / 10;
-			$pitch = $this->pitch + mt_rand(-120, 120) / 10;
+			$yaw = $this->yaw + mt_rand(-60, 60) / 10;
+			$pitch = $this->pitch + mt_rand(-60, 60) / 10;
 			$pos = new Location(
 				$this->x + (-sin(rad2deg($yaw)) * cos(rad2deg($pitch)) * 0.5),
 				$this->y + $this->getEyeHeight(),
@@ -228,6 +232,8 @@ class Blaze extends FlyingMonster implements ProjectileSource{
 				return;
 			}
 			$fireball->setExplode(true);
+			$fireball->setBlockBreaking(false);
+			$fireball->setDamage(2);
 
 			$this->server->getPluginManager()->callEvent($launch = new ProjectileLaunchEvent($fireball));
 			if($launch->isCancelled()){
