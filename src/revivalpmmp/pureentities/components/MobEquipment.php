@@ -613,7 +613,10 @@ class MobEquipment{
 				if($nbt instanceof ListTag){
 					$itemId = $nbt[0]["id"];
 					PureEntities::logOutput("MobEquipment: found hand item (id): $itemId -> set it now!", PureEntities::DEBUG);
-					$this->mainHand = Item::get($itemId);
+
+					if( $itemId !== NULL ) {
+						$this->mainHand = Item::get($itemId);
+					}
 				}
 			}
 			$this->recalculateArmorDamageReduction();
