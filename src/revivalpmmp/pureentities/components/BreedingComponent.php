@@ -139,10 +139,14 @@ class BreedingComponent{
 	public function loadFromNBT(){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
 			if(isset($this->entity->namedtag->Age)){
-				$this->age = $this->entity->namedtag[self::NBT_KEY_AGE];
+				$age = $this->entity->namedtag[self::NBT_KEY_AGE];
+				// Disallow null age; default to 0.
+				$this->age = ($age === null) ? 0 : $age;
 			}
 			if(isset($this->entity->namedtag->InLove)){
-				$this->inLove = $this->entity->namedtag[self::NBT_KEY_IN_LOVE];
+				$inLove = $this->entity->namedtag[self::NBT_KEY_IN_LOVE];
+				// Disallow null inLove; default to 0.
+				$this->inLove = ($inLove === null) ? 0 : $inLove;
 			}
 		}
 	}
