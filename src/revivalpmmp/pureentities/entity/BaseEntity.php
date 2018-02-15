@@ -193,8 +193,10 @@ abstract class BaseEntity extends Creature{
 		parent::initEntity();
 
 		$this->loadNBT();
-
 		$this->setDataFlag(self::DATA_FLAG_NO_AI, self::DATA_TYPE_BYTE, 1);
+
+		// TEMP: CK code which conflicted, remove if stable
+		//$this->propertyManager->setByte(self::DATA_FLAG_NO_AI,  1);
 
 		$this->idlingComponent->loadFromNBT();
 	}
