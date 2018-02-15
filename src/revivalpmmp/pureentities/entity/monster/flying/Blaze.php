@@ -228,7 +228,7 @@ class Blaze extends FlyingMonster implements ProjectileSource{
 				return;
 			}
 
-			$fireball->setExplode(true);
+			$fireball->setExplode(false);
 			$fireball->setBlockBreaking(false);
 			$fireball->setDamage(2);
 			$fireball->setMotion(new Vector3(
