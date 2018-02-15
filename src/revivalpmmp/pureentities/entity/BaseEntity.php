@@ -191,7 +191,7 @@ abstract class BaseEntity extends Creature{
 
 		$this->loadNBT();
 
-		$this->dataProperties[self::DATA_FLAG_NO_AI] = [self::DATA_TYPE_BYTE, 1];
+		$this->propertyManager->setByte(self::DATA_FLAG_NO_AI,  1);
 
 		$this->idlingComponent->loadFromNBT();
 	}
