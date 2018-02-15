@@ -237,7 +237,9 @@ class Blaze extends FlyingMonster implements ProjectileSource{
 			if(!($fireball instanceof SmallFireball)){
 				return;
 			}
-			$fireball->setExplode(true);
+			
+			$fireball->setExplode(false);
+			$fireball->setBlockBreaking(false);
 
 			$this->server->getPluginManager()->callEvent($launch = new ProjectileLaunchEvent($fireball));
 			if($launch->isCancelled()){
