@@ -27,7 +27,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\ProjectileSource;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
-use pocketmine\event\Timings;
+use pocketmine\timings\Timings;
 use pocketmine\item\Bow;
 use pocketmine\item\Item;
 use pocketmine\level\Level;

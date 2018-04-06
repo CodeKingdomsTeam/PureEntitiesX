@@ -28,7 +28,7 @@ use revivalpmmp\pureentities\entity\monster\WalkingMonster;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\Timings;
+use pocketmine\timings\Timings;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use revivalpmmp\pureentities\data\Data;

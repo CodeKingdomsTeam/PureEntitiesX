@@ -31,7 +31,7 @@ use pocketmine\entity\Creature;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\Timings;
+use pocketmine\timings\Timings;
 use pocketmine\level\Level;
 use pocketmine\math\Math;
 use pocketmine\math\Vector3;
@@ -248,9 +248,9 @@ abstract class BaseEntity extends Creature{
 		}
 	}
 
-	public function updateMovement(){
+	public function updateMovement(bool $teleport=false){
 		if(!$this->isClosed() && $this->getLevel() !== null){
-			parent::updateMovement();
+			parent::updateMovement($teleport);
 		}
 	}
 
@@ -357,7 +357,7 @@ abstract class BaseEntity extends Creature{
 		return false;
 	}
 
-	public function move(float $dx, float $dy, float $dz) : bool{
+	public function move(float $dx, float $dy, float $dz) {
 		Timings::$entityMoveTimer->startTiming();
 
 		$movX = $dx;
@@ -388,7 +388,6 @@ abstract class BaseEntity extends Creature{
 		$this->updateFallState($dy, $this->onGround);
 
 		Timings::$entityMoveTimer->stopTiming();
-		return true;
 	}
 
 	public function targetOption(Creature $creature, float $distance) : bool{

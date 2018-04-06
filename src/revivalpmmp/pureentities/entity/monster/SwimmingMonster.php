@@ -24,7 +24,7 @@ use revivalpmmp\pureentities\entity\SwimmingEntity;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\Timings;
+use pocketmine\timings\Timings;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\Server;
