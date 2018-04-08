@@ -357,7 +357,7 @@ abstract class BaseEntity extends Creature{
 		return false;
 	}
 
-	public function move(float $dx, float $dy, float $dz) {
+	public function move(float $dx, float $dy, float $dz): void {
 		Timings::$entityMoveTimer->startTiming();
 
 		$movX = $dx;
