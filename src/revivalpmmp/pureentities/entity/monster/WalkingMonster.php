@@ -165,46 +165,54 @@ abstract class WalkingMonster extends WalkingEntity implements Monster{
 	}
 
 	public function onUpdate(int $currentTick) : bool{
-		if($this->getLevel() == null) return false;
-		if($this->server->getDifficulty() < 1){
-			$this->despawnFromAll();
-			$this->close();
-			return false;
-		}
 
-		if($this->isClosed() or !$this->isAlive()){
-			return parent::onUpdate($currentTick);
-		}
+		try {
+			if($this->getLevel() == null) return false;
+			if($this->server->getDifficulty() < 1){
+				$this->despawnFromAll();
+				$this->close();
+				return false;
+			}
 
-		$tickDiff = $currentTick - $this->lastUpdate;
-		$this->lastUpdate = $currentTick;
-		$this->entityBaseTick($tickDiff);
+			if($this->isClosed() or !$this->isAlive()){
+				return parent::onUpdate($currentTick);
+			}
 
-		$target = $this->updateMove($tickDiff);
-		if($this->isFriendly()){
-			if(!($target instanceof Player)){
+			$tickDiff = $currentTick - $this->lastUpdate;
+			$this->lastUpdate = $currentTick;
+			$this->entityBaseTick($tickDiff);
+
+			$target = $this->updateMove($tickDiff);
+			if($this->isFriendly()){
+				if(!($target instanceof Player)){
+					if($target instanceof Entity && $target->distanceSquared($this) <= $this->attackDistance){
+						$this->checkAndAttackEntity($target);
+					}elseif(
+						$target instanceof Vector3
+						&& (($this->x - $target->x) ** 2 + ($this->z - $target->z) ** 2) <= 1
+						&& $this->motionY == 0
+					){
+						$this->moveTime = 0;
+					}
+				}
+			}else{
 				if($target instanceof Entity && $target->distanceSquared($this) <= $this->attackDistance){
 					$this->checkAndAttackEntity($target);
 				}elseif(
 					$target instanceof Vector3
-					&& (($this->x - $target->x) ** 2 + ($this->z - $target->z) ** 2) <= 1
+					&& $this->distanceSquared($target) <= 1
 					&& $this->motionY == 0
 				){
 					$this->moveTime = 0;
 				}
 			}
-		}else{
-			if($target instanceof Entity && $target->distanceSquared($this) <= $this->attackDistance){
-				$this->checkAndAttackEntity($target);
-			}elseif(
-				$target instanceof Vector3
-				&& $this->distanceSquared($target) <= 1
-				&& $this->motionY == 0
-			){
-				$this->moveTime = 0;
-			}
+			return true;
+		} catch( TypeError $error ) {
+
+			Server::getInstance()->getLogger()->warn($error);
+
+			return false;
 		}
-		return true;
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
