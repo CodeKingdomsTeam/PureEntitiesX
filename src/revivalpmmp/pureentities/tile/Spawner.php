@@ -33,6 +33,14 @@ use revivalpmmp\pureentities\task\spawners\BaseSpawner;
 
 class Spawner extends Spawnable{
 
+	const NBT_KEY_ENTITY_ID = "EntityId";
+	const NBT_KEY_SPAWN_RANGE = "SpawnRange";
+	const NBT_KEY_MIN_SPAWN_DELAY = "MinSpawnDelay";
+	const NBT_KEY_MAX_SPAWN_DELAY = "MaxSpawnDelay";
+	const NBT_KEY_MAX_NEARBY_ENTITIES = "MaxNearbyEntities";
+	const NBT_KEY_REQUIRED_PLAYER_RANGE = "RequiredPlayerRange";
+	const NBT_KEY_SPAWN_DATA = "SpawnData";
+
 	protected $entityId = -1;
 	protected $spawnRange;
 	protected $maxNearbyEntities;
@@ -47,28 +55,28 @@ class Spawner extends Spawnable{
 		parent::__construct($level, $nbt);
 
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			if(isset($this->namedtag->EntityId)){
-				$this->entityId = $this->namedtag["EntityId"];
+			if($this->namedtag->hasTag(self::NBT_KEY_ENTITY_ID)){
+				$this->entityId = $this->namedtag->getInt(self::NBT_KEY_ENTITY_ID);
 			}
 
-			if(!isset($this->namedtag->SpawnRange)){
-				$this->namedtag->SpawnRange = new ShortTag("SpawnRange", 8);
+			if(!$this->namedtag->hasTag(self::NBT_KEY_SPAWN_RANGE)){
+				$this->namedtag->setTag(new ShortTag(self::NBT_KEY_SPAWN_RANGE, 8));
 			}
 
-			if(!isset($this->namedtag->MinSpawnDelay)){
-				$this->namedtag->MinSpawnDelay = new ShortTag("MinSpawnDelay", 200);
+			if(!$this->namedtag->hasTag(self::NBT_KEY_MIN_SPAWN_DELAY)){
+				$this->namedtag->setTag(new ShortTag(self::NBT_KEY_MIN_SPAWN_DELAY, 200));
 			}
 
-			if(!isset($this->namedtag->MaxSpawnDelay)){
-				$this->namedtag->MaxSpawnDelay = new ShortTag("MaxSpawnDelay", 8000);
+			if(!$this->namedtag->hasTag(self::NBT_KEY_MAX_SPAWN_DELAY)){
+				$this->namedtag->setTag(new ShortTag(self::NBT_KEY_MAX_SPAWN_DELAY, 8000));
 			}
 
-			if(!isset($this->namedtag->MaxNearbyEntities)){
-				$this->namedtag->MaxNearbyEntities = new ShortTag("MaxNearbyEntities", 25);
+			if(!$this->namedtag->hasTag(self::NBT_KEY_MAX_NEARBY_ENTITIES)){
+				$this->namedtag->setTag(new ShortTag(self::NBT_KEY_MAX_NEARBY_ENTITIES, 25));
 			}
 
-			if(!isset($this->namedtag->RequiredPlayerRange)){
-				$this->namedtag->RequiredPlayerRange = new ShortTag("RequiredPlayerRange", 20);
+			if(!$this->namedtag->hasTag(self::NBT_KEY_REQUIRED_PLAYER_RANGE)){
+				$this->namedtag->setTag(new ShortTag(self::NBT_KEY_REQUIRED_PLAYER_RANGE, 20));
 			}
 
 			// TODO: add SpawnData: Contains tags to copy to the next spawned entity(s) after spawning. Any of the entity or
@@ -81,17 +89,17 @@ class Spawner extends Spawnable{
 			// the default vanilla spawning properties for this mob, including potentially randomized armor (this is true even
 			// if SpawnPotentials does exist). Warning: If SpawnPotentials exists, this tag will get overwritten after the
 			// next spawning attempt: see above for more details.
-			if(!isset($this->namedtag->SpawnData)){
-				$this->namedtag->SpawnData = new CompoundTag("SpawnData", [new IntTag("EntityId", $this->entityId)]);
+			if(!$this->namedtag->hasTag(self::NBT_KEY_SPAWN_DATA)){
+				$this->namedtag->setTag(new CompoundTag(self::NBT_KEY_SPAWN_DATA, [new IntTag(self::NBT_KEY_ENTITY_ID, $this->entityId)]));
 			}
 
 			// TODO: add SpawnCount: How many mobs to attempt to spawn each time. Note: Requires the MinSpawnDelay property to also be set.
 
-			$this->spawnRange = $this->namedtag["SpawnRange"];
-			$this->minSpawnDelay = $this->namedtag["MinSpawnDelay"];
-			$this->maxSpawnDelay = $this->namedtag["MaxSpawnDelay"];
-			$this->maxNearbyEntities = $this->namedtag["MaxNearbyEntities"];
-			$this->requiredPlayerRange = $this->namedtag["RequiredPlayerRange"];
+			$this->spawnRange = $this->namedtag->getShort(self::NBT_KEY_SPAWN_RANGE);
+			$this->minSpawnDelay = $this->namedtag->getShort(self::NBT_KEY_MIN_SPAWN_DELAY);
+			$this->maxSpawnDelay = $this->namedtag->getShort(self::NBT_KEY_MAX_SPAWN_DELAY);
+			$this->maxNearbyEntities = $this->namedtag->getShort(self::NBT_KEY_MAX_NEARBY_ENTITIES);
+			$this->requiredPlayerRange = $this->namedtag->getShort(self::NBT_KEY_REQUIRED_PLAYER_RANGE);
 		}
 
 		$this->scheduleUpdate();
@@ -137,22 +145,22 @@ class Spawner extends Spawnable{
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
 			parent::saveNBT();
 
-			$this->namedtag->EntityId = new ShortTag("EntityId", $this->entityId);
-			$this->namedtag->SpawnRange = new ShortTag("SpawnRange", $this->spawnRange);
-			$this->namedtag->MinSpawnDelay = new ShortTag("MinSpawnDelay", $this->minSpawnDelay);
-			$this->namedtag->MaxSpawnDelay = new ShortTag("MaxSpawnDelay", $this->maxSpawnDelay);
-			$this->namedtag->MaxNearbyEntities = new ShortTag("MaxNearbyEntities", $this->maxNearbyEntities);
-			$this->namedtag->RequiredPlayerRange = new ShortTag("RequiredPlayerRange", $this->requiredPlayerRange);
-			$this->namedtag->SpawnData = new CompoundTag("SpawnData", [new IntTag("EntityId", $this->entityId)]);
+			$this->namedtag->EntityId = new ShortTag(self::NBT_KEY_ENTITY_ID, $this->entityId);
+			$this->namedtag->SpawnRange = new ShortTag(self::NBT_KEY_SPAWN_RANGE, $this->spawnRange);
+			$this->namedtag->MinSpawnDelay = new ShortTag(self::NBT_KEY_MIN_SPAWN_DELAY, $this->minSpawnDelay);
+			$this->namedtag->MaxSpawnDelay = new ShortTag(self::NBT_KEY_MAX_SPAWN_DELAY, $this->maxSpawnDelay);
+			$this->namedtag->MaxNearbyEntities = new ShortTag(self::NBT_KEY_MAX_NEARBY_ENTITIES, $this->maxNearbyEntities);
+			$this->namedtag->RequiredPlayerRange = new ShortTag(self::NBT_KEY_REQUIRED_PLAYER_RANGE, $this->requiredPlayerRange);
+			$this->namedtag->SpawnData = new CompoundTag(self::NBT_KEY_SPAWN_DATA, [new IntTag(self::NBT_KEY_ENTITY_ID, $this->entityId)]);
 		}
 	}
 
 	public function setSpawnEntityType(int $entityId){
 		$this->entityId = $entityId;
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			$this->namedtag->EntityId = new ShortTag("EntityId", $this->entityId);
-			$this->namedtag->SpawnData = new CompoundTag("SpawnData", [
-				new IntTag("EntityId", $this->entityId)
+			$this->namedtag->EntityId = new ShortTag(self::NBT_KEY_ENTITY_ID, $this->entityId);
+			$this->namedtag->SpawnData = new CompoundTag(self::NBT_KEY_SPAWN_DATA, [
+				new IntTag(self::NBT_KEY_ENTITY_ID, $this->entityId)
 			]);
 		}
 		$this->spawnToAll();
@@ -192,7 +200,7 @@ class Spawner extends Spawnable{
 	}
 
 	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt["EntityId"] = $this->entityId;
+		$nbt->setInt(self::NBT_KEY_ENTITY_ID, $this->entityId);
 	}
 
 }

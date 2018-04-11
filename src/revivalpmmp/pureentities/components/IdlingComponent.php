@@ -224,19 +224,19 @@ class IdlingComponent{
 	public function loadFromNBT(){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
 			$namedTag = $this->baseEntity->namedtag;
-			if(isset($namedTag->IdleSettings)){
-				$nbt = $namedTag->IdleSettings;
+			if($namedTag->hasTag(self::NBT_KEY_IDLE_SETTINGS)){
+				$nbt = $namedTag->getTag(self::NBT_KEY_IDLE_SETTINGS);
 				/**
 				 * @var $nbt CompoundTag
 				 */
-				$this->idling = $nbt[self::NBT_KEY_IDLING];
+				$this->idling = $nbt->getInt(self::NBT_KEY_IDLING);
 				if($this->idling){
-					$this->idlingCounter = new TickCounter($nbt[self::NBT_KEY_MAX_IDLING_COUNTER]);
-					$this->idlingCounter->setCurrentCounter($nbt[self::NBT_KEY_IDLING_COUNTER]);
-					$this->idlingTickCounter = new TickCounter($nbt[self::NBT_KEY_MAX_IDLING_TICK_COUNTER]);
-					$this->idlingTickCounter->setCurrentCounter($nbt[self::NBT_KEY_IDLING_TICK_COUNTER]);
+					$this->idlingCounter = new TickCounter($nbt->getInt(self::NBT_KEY_MAX_IDLING_COUNTER));
+					$this->idlingCounter->setCurrentCounter($nbt->getInt(self::NBT_KEY_IDLING_COUNTER));
+					$this->idlingTickCounter = new TickCounter($nbt->getInt(self::NBT_KEY_MAX_IDLING_TICK_COUNTER));
+					$this->idlingTickCounter->setCurrentCounter($nbt->getInt(self::NBT_KEY_IDLING_TICK_COUNTER));
 				}
-				$this->lastIdleStatus = $nbt[self::NBT_KEY_LAST_IDLE_STATUS];
+				$this->lastIdleStatus = $nbt->getInt(self::NBT_KEY_LAST_IDLE_STATUS);
 				PureEntities::logOutput($this->baseEntity . ": Idling properties set: [idling:" . $this->idling . "] [lastIdleStatus:" . $this->lastIdleStatus . "]");
 			}else{
 				PureEntities::logOutput($this->baseEntity . ": no idling properties found in NBT. Do not restore idling status leave default.");
@@ -265,7 +265,7 @@ class IdlingComponent{
 					self::NBT_KEY_LAST_IDLE_STATUS => new IntTag(self::NBT_KEY_LAST_IDLE_STATUS, $this->lastIdleStatus)
 				]);
 			}
-			$entityTag->IdleSettings = $idleCompound;
+			$entityTag->setTag($idleCompound);
 		}
 	}
 
