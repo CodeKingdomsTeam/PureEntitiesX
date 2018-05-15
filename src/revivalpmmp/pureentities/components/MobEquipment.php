@@ -575,19 +575,19 @@ class MobEquipment{
 				PureEntities::logOutput("MobEquipment: armorItems set for " . $this->entity, PureEntities::DEBUG);
 				$nbt = $this->entity->namedtag->getTag(self::NBT_KEY_ARMOR_ITEMS);
 				if($nbt instanceof ListTag){
-					$itemId = $nbt->get(0)->getInt("id");
+					$itemId = $nbt->get(0)->hasTag("id") ? $nbt->get(0)->getInt("id") : NULL;
 					if($itemId !== NULL){
 						$this->boots = Item::get($itemId);
 					}
-					$itemId = $nbt->get(1)->getInt("id");
+					$itemId = $nbt->get(1)->hasTag("id") ? $nbt->get(1)->getInt("id") : NULL;
 					if($itemId !== NULL){
 						$this->leggings = Item::get($itemId);
 					}
-					$itemId = $nbt->get(2)->getInt("id");
+					$itemId = $nbt->get(2)->hasTag("id") ? $nbt->get(2)->getInt("id") : NULL;
 					if($itemId !== NULL){
 						$this->chestplate = Item::get($itemId);
 					}
-					$itemId = $nbt->get(3)->getInt("id");
+					$itemId = $nbt->get(3)->hasTag("id") ? $nbt->get(3)->getInt("id") : NULL;
 					if($itemId !== NULL){
 						$this->helmet = Item::get($itemId);
 					}
@@ -600,7 +600,7 @@ class MobEquipment{
 				PureEntities::logOutput("MobEquipment: handItems set for " . $this->entity, PureEntities::DEBUG);
 				$nbt = $this->entity->namedtag->getTag(self::NBT_KEY_HAND_ITEMS);
 				if($nbt instanceof ListTag){
-					$itemId = $nbt->get(0)->getInt("id");
+					$itemId = $nbt->get(0)->hasTag("id") ? $nbt->get(0)->getInt("id") : NULL;
 					PureEntities::logOutput("MobEquipment: found hand item (id): $itemId -> set it now!", PureEntities::DEBUG);
 
 					if( $itemId !== NULL ) {
