@@ -57,7 +57,7 @@ class Zombie extends WalkingMonster implements IntfCanEquip, IntfCanBreed, Monst
 	 */
 	private $pickUpLoot = [ItemIds::IRON_SWORD, ItemIds::IRON_SHOVEL];
 
-	public function initEntity() : void{
+	public function initEntity() : void {
 		parent::initEntity();
 		$this->width = Data::WIDTHS[self::NETWORK_ID];
 		$this->height = Data::HEIGHTS[self::NETWORK_ID];
@@ -101,12 +101,12 @@ class Zombie extends WalkingMonster implements IntfCanEquip, IntfCanBreed, Monst
 		}
 	}
 
-	/**
-	 * Zombie gets attacked. We need to recalculate the damage done with reducing the damage by armor type.
-	 *
-	 * @param EntityDamageEvent $source
-	 */
-	public function attack(EntityDamageEvent $source) : void{
+  /**
+   * Zombie gets attacked. We need to recalculate the damage done with reducing the damage by armor type.
+   *
+   * @param EntityDamageEvent $source
+   */
+	public function attack(EntityDamageEvent $source) : void {
 		$damage = $this->getDamage();
 		PureEntities::logOutput("$this: attacked with original damage of $damage", PureEntities::DEBUG);
 		$reduceDamagePercent = 0;

@@ -111,7 +111,7 @@ abstract class BaseEntity extends Creature{
 		return 0; // default no experience drops
 	}
 
-	public function getSaveId() : string{
+	public function getSaveId() : string {
 		$class = new \ReflectionClass(get_class($this));
 		return $class->getShortName();
 	}
@@ -192,7 +192,7 @@ abstract class BaseEntity extends Creature{
 		return $this->maxJumpHeight;
 	}
 
-	public function initEntity() : void{
+	public function initEntity() : void {
 		parent::initEntity();
 
 		$this->loadNBT();
@@ -202,7 +202,7 @@ abstract class BaseEntity extends Creature{
 		$this->idlingComponent->loadFromNBT();
 	}
 
-	public function saveNBT() : void{
+	public function saveNBT() : void {
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
 			parent::saveNBT();
 			$this->namedtag->setByte(NBTConst::NBT_KEY_MOVEMENT, $this->isMovement(), true);
@@ -232,7 +232,7 @@ abstract class BaseEntity extends Creature{
 		}
 	}
 
-	public function spawnTo(Player $player) : void{
+	public function spawnTo(Player $player) : void {
 		if(
 			!isset($this->hasSpawned[$player->getLoaderId()])
 			&& isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])
@@ -263,12 +263,12 @@ abstract class BaseEntity extends Creature{
 		return $bb !== null and $block->isSolid() and !$block->isTransparent() and $bb->intersectsWith($this->getBoundingBox());
 	}
 
-	/**
-	 * Entity gets attacked by another entity / explosion or something similar
-	 *
-	 * @param EntityDamageEvent $source the damage event
-	 */
-	public function attack(EntityDamageEvent $source) : void{
+  /**
+   * Entity gets attacked by another entity / explosion or something similar
+   *
+   * @param EntityDamageEvent $source the damage event
+   */
+	public function attack(EntityDamageEvent $source) : void {
 
 		if($this->isClosed() || $source->isCancelled() || !($source instanceof EntityDamageByEntityEvent)){
 			return;
@@ -304,7 +304,7 @@ abstract class BaseEntity extends Creature{
 		$this->checkAttackByTamedEntities($source);
 	}
 
-	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4) : void{
+	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4) : void {
 
 	}
 

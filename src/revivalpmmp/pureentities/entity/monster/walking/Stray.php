@@ -42,7 +42,7 @@ use revivalpmmp\pureentities\data\Data;
 class Stray extends WalkingMonster implements ProjectileSource{
 	const NETWORK_ID = Data::NETWORK_IDS["stray"];
 
-	public function initEntity() : void{
+	public function initEntity() : void {
 		parent::initEntity();
 		$this->width = Data::WIDTHS[self::NETWORK_ID];
 		$this->height = Data::HEIGHTS[self::NETWORK_ID];
@@ -102,7 +102,7 @@ class Stray extends WalkingMonster implements ProjectileSource{
 		}
 	}
 
-	public function spawnTo(Player $player) : void{
+	public function spawnTo(Player $player) : void {
 		parent::spawnTo($player);
 
 		$pk = new MobEquipmentPacket();
