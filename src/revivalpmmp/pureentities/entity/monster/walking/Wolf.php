@@ -66,7 +66,7 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
 
 	private $collarColor = Color::RED;
 
-	public function initEntity(){
+	public function initEntity() : void {
 		parent::initEntity();
 		$this->width = Data::WIDTHS[self::NETWORK_ID];
 		$this->height = Data::HEIGHTS[self::NETWORK_ID];
@@ -198,10 +198,10 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
 
 	// TODO: Determine cause of collar color being improperly applied.
 
-	/**
-	 * Saves important variables to the NBT
-	 */
-	public function saveNBT(){
+  /**
+   * Saves important variables to the NBT
+   */
+	public function saveNBT() : void {
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
 			parent::saveNBT();
 			$this->saveTameNBT();
@@ -232,12 +232,12 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
 		}
 	}
 
-	/**
-	 * Wolf gets attacked ...
-	 *
-	 * @param EntityDamageEvent $source
-	 */
-	public function attack(EntityDamageEvent $source){
+  /**
+   * Wolf gets attacked ...
+   *
+   * @param EntityDamageEvent $source
+   */
+	public function attack(EntityDamageEvent $source) : void {
 		parent::attack($source);
 
 		if(!$source->isCancelled()){
