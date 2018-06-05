@@ -157,12 +157,12 @@ class Blaze extends FlyingMonster implements ProjectileSource{
 				$this->motion->z = 0;
 			}else{
 				if($this->getBaseTarget() instanceof Creature){
-					$this->motionX = 0;
-					$this->motionZ = 0;
+					$this->motion->x = 0;
+					$this->motion->z = 0;
 					if ($this->y < $this->getBaseTarget()->y + $this->floatingHeight || $this->y < $this->getLevel()->getHighestBlockAt((int)$this->x, (int)$this->z) + $this->floatingHeight) {
-						$this->motionY = $this->gravity;
+						$this->motion->y = $this->gravity;
 					}else if ($this->y > $this->getLevel()->getHighestBlockAt((int)$this->x, (int)$this->z) + $this->floatingHeight + 0.5){
-						$this->motionY = -$this->gravity;
+						$this->motion->y = -$this->gravity;
 					}else{
 						$this->motion->y = 0;
 					}
