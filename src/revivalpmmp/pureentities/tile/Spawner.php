@@ -133,9 +133,9 @@ class Spawner extends Spawnable{
 		return true;
 	}
 
-	public function saveNBT() : void{
+	public function saveNBT(CompoundTag $nbt) : void{
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
+			parent::saveNBT($nbt);
 
 			$this->namedtag->EntityId = new ShortTag("EntityId", $this->entityId);
 			$this->namedtag->SpawnRange = new ShortTag("SpawnRange", $this->spawnRange);
@@ -194,5 +194,9 @@ class Spawner extends Spawnable{
 	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt["EntityId"] = $this->entityId;
 	}
+
+	// Method implementations required to make class concrete.
+	protected function writeSaveData(CompoundTag $nbt) : void {}
+	protected function readSaveData(CompoundTag $nbt) : void {}
 
 }

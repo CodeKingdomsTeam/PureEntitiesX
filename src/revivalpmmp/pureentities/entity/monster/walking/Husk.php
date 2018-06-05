@@ -53,7 +53,7 @@ class Husk extends WalkingMonster implements Ageable{
 		return $this->getDataFlag(self::DATA_FLAG_BABY, 0);
 	}
 
-	public function setHealth(float $amount){
+	public function setHealth(float $amount) :void{
 		parent::setHealth($amount);
 
 		if($this->isAlive()){
