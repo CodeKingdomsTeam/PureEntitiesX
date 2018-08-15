@@ -71,7 +71,7 @@ class ZombiePigman extends WalkingMonster implements IntfCanEquip, IntfCanBreed,
 		$this->setDamage([0, 2, 3, 4]);
 
 		$this->mobEquipment = new MobEquipment($this);
-		$this->mobEquipment->init();
+		$this->mobEquipment->init($nbt);
 
 		$this->feedableItems = [];
 
@@ -80,6 +80,14 @@ class ZombiePigman extends WalkingMonster implements IntfCanEquip, IntfCanBreed,
 		$this->mobEquipment->setMainHand(Item::get(ItemIds::GOLDEN_SWORD));
 		$this->mobEquipment->sendHandItemsToAllClients();
 
+	}
+
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
+
+		$this->mobEquipment->storeToNBT($nbt);
+
+		return $nbt;
 	}
 
 	public function getName() : string{

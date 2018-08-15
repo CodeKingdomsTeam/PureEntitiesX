@@ -67,12 +67,20 @@ class Zombie extends WalkingMonster implements IntfCanEquip, IntfCanBreed, Monst
 		$this->setDamage([0, 2, 3, 4]);
 
 		$this->mobEquipment = new MobEquipment($this);
-		$this->mobEquipment->init();
+		$this->mobEquipment->init($nbt);
 
 		$this->feedableItems = [];
 
 		$this->breedableClass = new BreedingComponent($this);
 		$this->breedableClass->init($nbt);
+	}
+
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
+
+		$this->mobEquipment->storeToNBT($nbt);
+
+		return $nbt;
 	}
 
 	/**
