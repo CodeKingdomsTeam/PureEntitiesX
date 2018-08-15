@@ -20,6 +20,8 @@
 
 namespace revivalpmmp\pureentities\entity\animal\walking;
 
+use pocketmine\nbt\tag\CompoundTag;
+
 use pocketmine\entity\Creature;
 use revivalpmmp\pureentities\data\NBTConst;
 use revivalpmmp\pureentities\entity\animal\WalkingAnimal;
@@ -76,8 +78,8 @@ class Ocelot extends WalkingAnimal implements IntfTameable, IntfCanBreed, IntfCa
 		return 0.8;
 	}
 
-	public function initEntity() : void {
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt) : void {
+		parent::initEntity($nbt);
 		$this->width = Data::WIDTHS[self::NETWORK_ID];
 		$this->height = Data::HEIGHTS[self::NETWORK_ID];
 		$this->speed = 1.2;
@@ -105,7 +107,7 @@ class Ocelot extends WalkingAnimal implements IntfTameable, IntfCanBreed, IntfCa
 			}
 		}
 
-		$this->breedableClass->init();
+		$this->breedableClass->init($nbt);
 
 		$this->teleportDistance = PluginConfiguration::getInstance()->getTamedTeleportBlocks();
 		$this->followDistance = PluginConfiguration::getInstance()->getTamedPlayerMaxDistance();
@@ -187,21 +189,22 @@ class Ocelot extends WalkingAnimal implements IntfTameable, IntfCanBreed, IntfCa
 	/**
 	 * Loads data from nbt and stores to local variables
 	 */
-	public function loadNBT(){
+	public function loadNBT(CompoundTag $nbt){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::loadNBT();
-			if($this->namedtag->hasTag(NBTConst::NBT_KEY_CATTYPE)){
-				$catType = $this->namedtag->getByte(NBTConst::NBT_KEY_CATTYPE, 0, true);
+			parent::loadNBT($nbt);
+			if($nbt->hasTag(NBTConst::NBT_KEY_CATTYPE)){
+				$catType = $nbt->getByte(NBTConst::NBT_KEY_CATTYPE, 0, true);
 				$this->setCatType($catType);
 			}
 		}
 	}
 
-	public function saveNBT() : void {
+	public function saveNBT() : CompoundTag {
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
-			$this->namedtag->setByte(NBTConst::NBT_KEY_CATTYPE, $this->catType, true); // sets ocelot skin
-			$this->breedableClass->saveNBT();
+			$nbt = parent::saveNBT();
+			$nbt->setByte(NBTConst::NBT_KEY_CATTYPE, $this->catType, true); // sets ocelot skin
+			$this->breedableClass->saveNBT($nbt);
+			return $nbt;
 		}
 
 	}

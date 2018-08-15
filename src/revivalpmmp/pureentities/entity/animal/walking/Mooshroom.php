@@ -20,6 +20,8 @@
 
 namespace revivalpmmp\pureentities\entity\animal\walking;
 
+use pocketmine\nbt\tag\CompoundTag;
+
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\data\NBTConst;
 use revivalpmmp\pureentities\entity\animal\WalkingAnimal;
@@ -37,13 +39,13 @@ class Mooshroom extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, 
 	use Shearable, Breedable, Feedable;
 	const NETWORK_ID = Data::NETWORK_IDS["mooshroom"];
 
-	public function initEntity() : void {
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt) : void {
+		parent::initEntity($nbt);
 		$this->width = Data::WIDTHS[self::NETWORK_ID];
 		$this->height = Data::HEIGHTS[self::NETWORK_ID];
 		$this->feedableItems = array(Item::WHEAT);
 		$this->breedableClass = new BreedingComponent($this);
-		$this->breedableClass->init();
+		$this->breedableClass->init($nbt);
 		$this->maxShearDrops = 5;
 		$this->shearItems = Item::RED_MUSHROOM;
 	}
@@ -52,23 +54,24 @@ class Mooshroom extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, 
 		return "Mooshroom";
 	}
 
-	public function loadNBT(){
+	public function loadNBT(CompoundTag $nbt){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::loadNBT();
+			parent::loadNBT($nbt);
 
-			if($this->namedtag->hasTag(NBTConst::NBT_KEY_SHEARED)){
+			if($nbt->hasTag(NBTConst::NBT_KEY_SHEARED)){
 
-				$sheared = $this->namedtag->getByte(NBTConst::NBT_KEY_SHEARED, false, true);
+				$sheared = $nbt->getByte(NBTConst::NBT_KEY_SHEARED, false, true);
 				$this->sheared = (bool) $sheared;
 			}
 		}
 	}
 
-	public function saveNBT() : void {
+	public function saveNBT() : CompoundTag {
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
-			$this->breedableClass->saveNBT();
-			$this->namedtag->setByte(NBTConst::NBT_KEY_SHEARED, $this->isSheared() ? 0 : 1, true);
+			$nbt = parent::saveNBT();
+			$this->breedableClass->saveNBT($nbt);
+			$nbt->setByte(NBTConst::NBT_KEY_SHEARED, $this->isSheared() ? 0 : 1, true);
+			return $nbt;
 		}
 	}
 

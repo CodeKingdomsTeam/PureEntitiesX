@@ -23,13 +23,14 @@ namespace revivalpmmp\pureentities\entity\animal\flying;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\animal\FlyingAnimal;
 use pocketmine\entity\Creature;
+use pocketmine\nbt\tag\CompoundTag;
 
 class Bat extends FlyingAnimal{
 	//TODO implement
 	const NETWORK_ID = Data::NETWORK_IDS["bat"];
 
-	public function initEntity() : void {
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt) : void {
+		parent::initEntity($nbt);
 		$this->width = Data::WIDTHS[self::NETWORK_ID];
 		$this->height = Data::HEIGHTS[self::NETWORK_ID];
 	}

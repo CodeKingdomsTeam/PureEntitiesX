@@ -20,6 +20,8 @@
 
 namespace revivalpmmp\pureentities\entity\monster\walking;
 
+use pocketmine\nbt\tag\CompoundTag;
+
 use pocketmine\item\Item;
 use pocketmine\Player;
 use revivalpmmp\pureentities\components\BreedingComponent;
@@ -66,8 +68,8 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
 
 	private $collarColor = Color::RED;
 
-	public function initEntity() : void {
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt) : void {
+		parent::initEntity($nbt);
 		$this->width = Data::WIDTHS[self::NETWORK_ID];
 		$this->height = Data::HEIGHTS[self::NETWORK_ID];
 		$this->speed = 1.2;
@@ -77,7 +79,7 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
 
 
 		$this->breedableClass = new BreedingComponent($this);
-		$this->breedableClass->init();
+		$this->breedableClass->init($nbt);
 
 		$this->tameFoods = array(
 			Item::BONE
@@ -103,7 +105,6 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
 				PureEntities::logOutput("Wolf($this): is tamed but player not online. Cannot set tamed owner. Will be set when player logs in ..", PureEntities::NORM);
 			}
 		}
-		$this->breedableClass->init();
 
 		$this->teleportDistance = PluginConfiguration::getInstance()->getTamedTeleportBlocks();
 		$this->followDistance = PluginConfiguration::getInstance()->getTamedPlayerMaxDistance();
@@ -183,16 +184,16 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
 	/**
 	 * Loads data from NBT and stores to local variables
 	 */
-	public function loadNBT(){
+	public function loadNBT(CompoundTag $nbt){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::loadNBT();
+			parent::loadNBT($nbt);
 			$this->loadTameNBT();
-			if($this->namedtag->hasTag(NBTConst::NBT_KEY_ANGRY)){
-				$angry = $this->namedtag->getInt(NBTConst::NBT_KEY_ANGRY, 0, true);
+			if($nbt->hasTag(NBTConst::NBT_KEY_ANGRY)){
+				$angry = $nbt->getInt(NBTConst::NBT_KEY_ANGRY, 0, true);
 				$this->setAngry($angry);
 			}
-			if($this->namedtag->hasTag(NBTConst::NBT_KEY_COLLAR_COLOR)){
-				$color = $this->namedtag->getByte(NBTConst::NBT_KEY_COLLAR_COLOR, Color::RED);
+			if($nbt->hasTag(NBTConst::NBT_KEY_COLLAR_COLOR)){
+				$color = $nbt->getByte(NBTConst::NBT_KEY_COLLAR_COLOR, Color::RED);
 				$this->setCollarColor($color);
 			}
 		}
@@ -203,14 +204,17 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
   /**
    * Saves important variables to the NBT
    */
-	public function saveNBT() : void {
+	public function saveNBT() : CompoundTag {
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
+			$nbt = parent::saveNBT();
 			$this->saveTameNBT();
-			$this->namedtag->setInt(NBTConst::NBT_KEY_ANGRY, $this->angryValue, true);
-			$this->namedtag->setByte(NBTConst::NBT_KEY_COLLAR_COLOR, $this->collarColor, true); // set collar color
+			$nbt->setInt(NBTConst::NBT_KEY_ANGRY, $this->angryValue, true);
+			$nbt->setByte(NBTConst::NBT_KEY_COLLAR_COLOR, $this->collarColor, true); // set collar color
 		}
-		$this->breedableClass->saveNBT();
+
+		$this->breedableClass->saveNBT($nbt);
+
+		return $nbt;
 	}
 
 	/**

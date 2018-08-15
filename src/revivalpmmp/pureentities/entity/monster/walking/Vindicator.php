@@ -20,6 +20,8 @@
 
 namespace revivalpmmp\pureentities\entity\monster\walking;
 
+use pocketmine\nbt\tag\CompoundTag;
+
 use pocketmine\item\ItemIds;
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\components\MobEquipment;
@@ -52,8 +54,8 @@ class Vindicator extends WalkingMonster implements IntfCanEquip, IntfCanBreed, M
 	private $mobEquipment;
 	private $pickUpLoot = [];
 
-	public function initEntity() : void {
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt) : void {
+		parent::initEntity($nbt);
 		$this->width = Data::WIDTHS[self::NETWORK_ID];
 		$this->height = Data::HEIGHTS[self::NETWORK_ID];
 		$this->speed = 1.1;
@@ -65,7 +67,7 @@ class Vindicator extends WalkingMonster implements IntfCanEquip, IntfCanBreed, M
 		$this->feedableItems = [];
 
 		$this->breedableClass = new BreedingComponent($this);
-		$this->breedableClass->init();
+		$this->breedableClass->init($nbt);
 	}
 
 	/**

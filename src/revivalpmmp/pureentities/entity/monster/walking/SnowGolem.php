@@ -46,8 +46,8 @@ class SnowGolem extends WalkingMonster implements ProjectileSource, IntfCanInter
 	use Shearable;
 	const NETWORK_ID = Data::NETWORK_IDS["snow_golem"];
 
-	public function initEntity() : void {
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt) : void {
+		parent::initEntity($nbt);
 		$this->width = Data::WIDTHS[self::NETWORK_ID];
 		$this->height = Data::HEIGHTS[self::NETWORK_ID];
 
@@ -141,9 +141,9 @@ class SnowGolem extends WalkingMonster implements ProjectileSource, IntfCanInter
 	/**
 	 * loads data from nbt and fills internal variables
 	 */
-	public function loadNBT(){
+	public function loadNBT(CompoundTag $nbt){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			if(($pumpkin = $this->namedtag->getByte(NBTConst::NBT_KEY_PUMPKIN, NBTConst::NBT_INVALID_BYTE)) !== NBTConst::NBT_INVALID_BYTE){
+			if(($pumpkin = $nbt->getByte(NBTConst::NBT_KEY_PUMPKIN, NBTConst::NBT_INVALID_BYTE)) !== NBTConst::NBT_INVALID_BYTE){
 				$this->sheared = boolval($pumpkin);
 			}
 		}
@@ -152,10 +152,11 @@ class SnowGolem extends WalkingMonster implements ProjectileSource, IntfCanInter
   /**
    * Stores internal variables to NBT
    */
-	public function saveNBT() : void {
+	public function saveNBT() : CompoundTag {
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
-			$this->namedtag->setInt(NBTConst::NBT_KEY_PUMPKIN, $this->sheared ? 0 : 1); // default: has pumpkin on his head (1 - pumpkin on head, 0 - pumpkin off!)
+			$nbt = parent::saveNBT();
+			$nbt->setInt(NBTConst::NBT_KEY_PUMPKIN, $this->sheared ? 0 : 1); // default: has pumpkin on his head (1 - pumpkin on head, 0 - pumpkin off!)
+			return $nbt;
 		}
 	}
 

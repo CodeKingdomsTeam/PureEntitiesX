@@ -21,6 +21,8 @@
 
 namespace revivalpmmp\pureentities\entity\animal\walking;
 
+use pocketmine\nbt\tag\CompoundTag;
+
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\data\Data;
 use revivalpmmp\pureentities\entity\animal\WalkingAnimal;
@@ -38,8 +40,8 @@ class Rabbit extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Int
 	use Breedable, CanPanic, Feedable;
 	const NETWORK_ID = Data::NETWORK_IDS["rabbit"];
 
-	public function initEntity() : void {
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt) : void {
+		parent::initEntity($nbt);
 		$this->width = Data::WIDTHS[self::NETWORK_ID];
 		$this->height = Data::HEIGHTS[self::NETWORK_ID];
 		$this->speed = 2;
@@ -50,13 +52,14 @@ class Rabbit extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Int
 			Item::GOLDEN_CARROT,
 			Item::DANDELION);
 		$this->breedableClass = new BreedingComponent($this);
-		$this->breedableClass->init();
+		$this->breedableClass->init($nbt);
 	}
 
-	public function saveNBT() : void {
+	public function saveNBT() : CompoundTag {
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
-			$this->breedableClass->saveNBT();
+			$nbt = parent::saveNBT();
+			$this->breedableClass->saveNBT($nbt);
+			return $nbt;
 		}
 	}
 

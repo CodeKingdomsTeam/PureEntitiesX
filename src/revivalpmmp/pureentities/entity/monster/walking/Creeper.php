@@ -20,6 +20,8 @@
 
 namespace revivalpmmp\pureentities\entity\monster\walking;
 
+use pocketmine\nbt\tag\CompoundTag;
+
 use pocketmine\event\entity\ExplosionPrimeEvent;
 use revivalpmmp\pureentities\data\NBTConst;
 use revivalpmmp\pureentities\entity\monster\WalkingMonster;
@@ -42,8 +44,8 @@ class Creeper extends WalkingMonster implements Explosive{
 
 	private $powered = 0;
 
-	public function initEntity() : void {
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt) : void {
+		parent::initEntity($nbt);
 		$this->width = Data::WIDTHS[self::NETWORK_ID];
 		$this->height = Data::HEIGHTS[self::NETWORK_ID];
 		$this->speed = 0.9;
@@ -59,20 +61,21 @@ class Creeper extends WalkingMonster implements Explosive{
 		$this->getDataPropertyManager()->setPropertyValue(self::DATA_POWERED, self::DATA_TYPE_BYTE, $this->powered);
 	}
 
-	public function loadNBT(){
+	public function loadNBT(CompoundTag $nbt){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::loadNBT();
-			if($this->namedtag->hasTag(NBTConst::NBT_KEY_POWERED)){
-				$this->powered = $this->namedtag->getInt(NBTConst::NBT_KEY_POWERED, 0, true);
+			parent::loadNBT($nbt);
+			if($nbt->hasTag(NBTConst::NBT_KEY_POWERED)){
+				$this->powered = $nbt->getInt(NBTConst::NBT_KEY_POWERED, 0, true);
 				$this->setPowered($this->powered);
 			}
 		}
 	}
 
-	public function saveNBT() : void {
+	public function saveNBT() : CompoundTag {
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
-			$this->namedtag->setInt(NBTConst::NBT_KEY_POWERED, $this->powered, true);
+			$nbt = parent::saveNBT();
+			$nbt->setInt(NBTConst::NBT_KEY_POWERED, $this->powered, true);
+			return $nbt;
 		}
 	}
 

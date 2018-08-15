@@ -20,6 +20,8 @@
 
 namespace revivalpmmp\pureentities\entity\animal;
 
+use pocketmine\nbt\tag\CompoundTag;
+
 use revivalpmmp\pureentities\entity\SwimmingEntity;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
@@ -34,8 +36,8 @@ abstract class SwimmingAnimal extends SwimmingEntity implements Animal{
 		return 1.0;
 	}
 
-	public function initEntity() : void {
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt) : void {
+		parent::initEntity($nbt);
 
 		if($this->getDataFlag(self::DATA_FLAG_BABY, 0) === null){
 			$this->setDataFlag(self::DATA_FLAG_BABY, self::DATA_TYPE_BYTE, 0);

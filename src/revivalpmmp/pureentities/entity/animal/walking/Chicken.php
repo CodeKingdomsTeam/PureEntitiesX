@@ -20,6 +20,8 @@
 
 namespace revivalpmmp\pureentities\entity\animal\walking;
 
+use pocketmine\nbt\tag\CompoundTag;
+
 use pocketmine\level\sound\PopSound;
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\entity\animal\WalkingAnimal;
@@ -45,8 +47,8 @@ class Chicken extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, In
 	private $dropEggTime = 0;
 
 
-	public function initEntity() : void {
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt) : void {
+		parent::initEntity($nbt);
 		$this->setNetworkId(Data::NETWORK_IDS["chicken"]);
 		$this->width = Data::WIDTHS[$this->getNetworkId()];
 		$this->height = Data::HEIGHTS[$this->getNetworkId()];
@@ -54,7 +56,7 @@ class Chicken extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, In
 		$this->gravity = 0.08;
 
 		$this->breedableClass = new BreedingComponent($this);
-		$this->breedableClass->init();
+		$this->breedableClass->init($nbt);
 
 		$this->feedableItems = array(
 			Item::WHEAT_SEEDS,
@@ -63,10 +65,12 @@ class Chicken extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, In
 			Item::BEETROOT_SEEDS);
 	}
 
-	public function saveNBT() : void {
+	public function saveNBT() : CompoundTag {
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
-			$this->breedableClass->saveNBT();
+			$nbt = parent::saveNBT();
+			$this->breedableClass->saveNBT($nbt);
+
+			return $nbt;
 		}
 	}
 

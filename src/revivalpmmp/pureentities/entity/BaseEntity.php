@@ -70,7 +70,6 @@ abstract class BaseEntity extends Creature{
 	public $height = 1.0;
 	public $speed = 1.0;
 
-
 	/**
 	 * @var int
 	 */
@@ -97,7 +96,7 @@ abstract class BaseEntity extends Creature{
 			$this->eyeHeight = $this->height / 2 + 0.1;
 		} */
 		if(!$this->isFlaggedForDespawn()){
-			$this->namedtag->setByte("generatedByPEX", 1, true);
+			$nbt->setByte("generatedByPEX", 1, true);
 		}
 	}
 
@@ -192,41 +191,43 @@ abstract class BaseEntity extends Creature{
 		return $this->maxJumpHeight;
 	}
 
-	public function initEntity() : void {
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt) : void {
+		parent::initEntity($nbt);
 
-		$this->loadNBT();
+		$this->loadNBT($nbt);
 
 		$this->setDataFlag(self::DATA_FLAG_NO_AI, self::DATA_TYPE_BYTE, 1);
 
-		$this->idlingComponent->loadFromNBT();
+		$this->idlingComponent->loadFromNBT($nbt);
 	}
 
-	public function saveNBT() : void {
+	public function saveNBT() : CompoundTag {
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
-			$this->namedtag->setByte(NBTConst::NBT_KEY_MOVEMENT, $this->isMovement(), true);
-			$this->namedtag->setByte(NBTConst::NBT_KEY_WALL_CHECK, $this->isWallCheck(), true);
-			$this->namedtag->setInt(NBTConst::NBT_KEY_AGE_IN_TICKS, $this->age, true);
+			$nbt = parent::saveNBT();
+			$nbt->setByte(NBTConst::NBT_KEY_MOVEMENT, $this->isMovement(), true);
+			$nbt->setByte(NBTConst::NBT_KEY_WALL_CHECK, $this->isWallCheck(), true);
+			$nbt->setInt(NBTConst::NBT_KEY_AGE_IN_TICKS, $this->age, true);
 
 			// No reason to attempt this if getEnableNBT is false.
-			$this->idlingComponent->saveNBT();
+			$this->idlingComponent->saveNBT($nbt);
+
+			return $nbt;
 		}
 	}
 
-	public function loadNBT(){
+	public function loadNBT(CompoundTag $nbt){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			if($this->namedtag->hasTag(NBTConst::NBT_KEY_MOVEMENT)){
-				$movement = $this->namedtag->getByte(NBTConst::NBT_KEY_MOVEMENT, false, true);
+			if($nbt->hasTag(NBTConst::NBT_KEY_MOVEMENT)){
+				$movement = $nbt->getByte(NBTConst::NBT_KEY_MOVEMENT, false, true);
 				$this->setMovement((bool) $movement);
 			}
 
-			if($this->namedtag->hasTag(NBTConst::NBT_KEY_WALL_CHECK)){
-				$wallCheck = $this->namedtag->getByte(NBTConst::NBT_KEY_WALL_CHECK, false, true);
+			if($nbt->hasTag(NBTConst::NBT_KEY_WALL_CHECK)){
+				$wallCheck = $nbt->getByte(NBTConst::NBT_KEY_WALL_CHECK, false, true);
 				$this->setWallCheck((bool) $wallCheck);
 			}
-			if($this->namedtag->hasTag(NBTConst::NBT_KEY_AGE_IN_TICKS)){
-				$age = $this->namedtag->getInt(NBTConst::NBT_KEY_AGE_IN_TICKS, 0, true);
+			if($nbt->hasTag(NBTConst::NBT_KEY_AGE_IN_TICKS)){
+				$age = $nbt->getInt(NBTConst::NBT_KEY_AGE_IN_TICKS, 0, true);
 				$this->age = $age;
 			}
 		}

@@ -19,6 +19,8 @@
 
 namespace revivalpmmp\pureentities\entity\animal\flying;
 
+use pocketmine\nbt\tag\CompoundTag;
+
 
 use pocketmine\entity\Creature;
 use revivalpmmp\pureentities\data\NBTConst;
@@ -37,8 +39,8 @@ class Parrot extends FlyingAnimal implements IntfTameable, IntfCanInteract{
 	const NETWORK_ID = Data::NETWORK_IDS["parrot"];
 	private $birdType; // 0 = red, 1 = blue, 2 = green, 3 = cyan, 4 = silver
 
-	public function initEntity() : void {
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt) : void {
+		parent::initEntity($nbt);
 		$this->width = Data::WIDTHS[self::NETWORK_ID];
 		$this->height = Data::HEIGHTS[self::NETWORK_ID];
 		$this->fireProof = false;
@@ -61,20 +63,22 @@ class Parrot extends FlyingAnimal implements IntfTameable, IntfCanInteract{
 		}
 	}
 
-	public function loadNBT(){
+	public function loadNBT(CompoundTag $nbt){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::loadNBT();
-			if($this->namedtag->hasTag(NBTConst::NBT_KEY_BIRDTYPE)){
-				$birdType = $this->namedtag->getByte(NBTConst::NBT_KEY_BIRDTYPE, $this->getRandomBirdType(), true);
+			parent::loadNBT($nbt);
+			if($nbt->hasTag(NBTConst::NBT_KEY_BIRDTYPE)){
+				$birdType = $nbt->getByte(NBTConst::NBT_KEY_BIRDTYPE, $this->getRandomBirdType(), true);
 				$this->setBirdType($birdType);
 			}
 		}
 	}
 
-	public function saveNBT() : void {
+	public function saveNBT() : CompoundTag {
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
-			$this->namedtag->setByte(NBTConst::NBT_KEY_BIRDTYPE, $this->birdType, true);
+			$nbt = parent::saveNBT();
+			$nbt->setByte(NBTConst::NBT_KEY_BIRDTYPE, $this->birdType, true);
+
+			return $nbt;
 		}
 	}
 

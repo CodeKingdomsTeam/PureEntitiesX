@@ -20,7 +20,7 @@
 
 namespace revivalpmmp\pureentities\components;
 
-
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\entity\Entity;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\Player;
@@ -129,30 +129,30 @@ class BreedingComponent{
 		$this->emitLoveParticles = PluginConfiguration::getInstance()->getEmitLoveParticlesConstantly();
 	}
 
-	public function loadFromNBT(){
+	public function loadFromNBT(CompoundTag $nbt){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
 
-			if($this->entity->namedtag->hasTag(NBTConst::NBT_KEY_AGE)){
-				$this->age = $this->entity->namedtag->getInt(NBTConst::NBT_KEY_AGE, 0, true);
+			if($nbt->hasTag(NBTConst::NBT_KEY_AGE)){
+				$this->age = $nbt->getInt(NBTConst::NBT_KEY_AGE, 0, true);
 			}
-			if($this->entity->namedtag->hasTag(NBTConst::NBT_KEY_IN_LOVE)){
-				$this->inLove = $this->entity->namedtag->getInt(NBTConst::NBT_KEY_IN_LOVE, 0, true);
+			if($nbt->hasTag(NBTConst::NBT_KEY_IN_LOVE)){
+				$this->inLove = $nbt->getInt(NBTConst::NBT_KEY_IN_LOVE, 0, true);
 			}
 		}
 	}
 
-	public function saveNBT(){
+	public function saveNBT(CompoundTag $nbt){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			$this->entity->namedtag->setInt(NBTConst::NBT_KEY_AGE, $this->age, true);
-			$this->entity->namedtag->setInt(NBTConst::NBT_KEY_IN_LOVE, $this->inLove, true);
+			$nbt->setInt(NBTConst::NBT_KEY_AGE, $this->age, true);
+			$nbt->setInt(NBTConst::NBT_KEY_IN_LOVE, $this->inLove, true);
 		}
 	}
 
 	/**
 	 * call this method each time, the entity's init method is called
 	 */
-	public function init(){
-		$this->loadFromNBT();
+	public function init(CompoundTag $nbt){
+		$this->loadFromNBT($nbt);
 		$this->setAge($this->age);
 		$this->setInLove($this->inLove);
 	}

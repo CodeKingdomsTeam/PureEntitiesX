@@ -20,6 +20,8 @@
 
 namespace revivalpmmp\pureentities\entity\animal;
 
+use pocketmine\nbt\tag\CompoundTag;
+
 use revivalpmmp\pureentities\PureEntities;
 use revivalpmmp\pureentities\InteractionHelper;
 use revivalpmmp\pureentities\entity\FlyingEntity;
@@ -37,8 +39,8 @@ abstract class FlyingAnimal extends FlyingEntity implements Animal{
 		return 0.7;
 	}
 
-	public function initEntity() : void {
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt) : void {
+		parent::initEntity($nbt);
 
 		if($this->getDataFlag(self::DATA_FLAG_BABY, 0) === null){
 			$this->setDataFlag(self::DATA_FLAG_BABY, self::DATA_TYPE_BYTE, 0);

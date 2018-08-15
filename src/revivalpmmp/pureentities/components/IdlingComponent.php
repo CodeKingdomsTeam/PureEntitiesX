@@ -207,9 +207,8 @@ class IdlingComponent{
 	/**
 	 * Loads the data for this component from entity's nbt
 	 */
-	public function loadFromNBT(){
+	public function loadFromNBT(CompoundTag $namedTag){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			$namedTag = $this->baseEntity->namedtag;
 			if($namedTag->hasTag(NBTConst::NBT_KEY_IDLE_SETTINGS)){
 				$nbt = $namedTag->getCompoundTag(NBTConst::NBT_KEY_IDLE_SETTINGS);
 				/**
@@ -233,9 +232,8 @@ class IdlingComponent{
 	/**
 	 * Stores local data to NBT
 	 */
-	public function saveNBT(){
+	public function saveNBT(CompoundTag $entityTag){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			$entityTag = $this->baseEntity->namedtag;
 			$idleCompound = new CompoundTag(NBTConst::NBT_KEY_IDLE_SETTINGS);
 			if($this->idling){
 				$idleCompound->setInt(NBTConst::NBT_KEY_IDLING, $this->idling);

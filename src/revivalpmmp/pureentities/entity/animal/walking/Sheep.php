@@ -20,6 +20,8 @@
 
 namespace revivalpmmp\pureentities\entity\animal\walking;
 
+use pocketmine\nbt\tag\CompoundTag;
+
 use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\Dirt;
@@ -72,12 +74,12 @@ class Sheep extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Intf
 		return intval($arr[mt_rand(0, count($arr) - 1)]);
 	}
 
-	public function initEntity() : void {
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt) : void {
+		parent::initEntity($nbt);
 		$this->width = Data::WIDTHS[self::NETWORK_ID];
 		$this->height = Data::HEIGHTS[self::NETWORK_ID];
 		$this->breedableClass = new BreedingComponent($this);
-		$this->breedableClass->init();
+		$this->breedableClass->init($nbt);
 		$this->feedableItems = array(Item::WHEAT);
 		$this->maxShearDrops = 3;
 		$this->shearItems = Item::WOOL;
@@ -126,15 +128,15 @@ class Sheep extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Intf
 	/**
 	 * loads data from nbt and fills internal variables
 	 */
-	public function loadNBT(){
+	public function loadNBT(CompoundTag $nbt){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			if($this->namedtag->hasTag(NBTConst::NBT_KEY_SHEARED)){
-				$sheared = $this->namedtag->getByte(NBTConst::NBT_KEY_SHEARED, false, true);
+			if($nbt->hasTag(NBTConst::NBT_KEY_SHEARED)){
+				$sheared = $nbt->getByte(NBTConst::NBT_KEY_SHEARED, false, true);
 				$this->sheared = (bool) $sheared;
 			}
 
-			if($this->namedtag->hasTag(NBTConst::NBT_KEY_COLOR)){
-				$color = $this->namedtag->getByte(NBTConst::NBT_KEY_COLOR, self::getRandomColor());
+			if($nbt->hasTag(NBTConst::NBT_KEY_COLOR)){
+				$color = $nbt->getByte(NBTConst::NBT_KEY_COLOR, self::getRandomColor());
 				$this->color = (int) $color;
 			}
 		}
@@ -143,13 +145,15 @@ class Sheep extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, Intf
   /**
    * Stores internal variables to NBT
    */
-	public function saveNBT() : void {
+	public function saveNBT() : CompoundTag {
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
-			$this->namedtag->setTag(new ByteTag(NBTConst::NBT_KEY_SHEARED, $this->sheared));
-			$this->namedtag->setTag(new ByteTag(NBTConst::NBT_KEY_COLOR, $this->color));
+			$nbt = parent::saveNBT();
+			$nbt->setTag(new ByteTag(NBTConst::NBT_KEY_SHEARED, $this->sheared));
+			$nbt->setTag(new ByteTag(NBTConst::NBT_KEY_COLOR, $this->color));
 		}
-		$this->breedableClass->saveNBT();
+		$this->breedableClass->saveNBT($nbt);
+
+		return $nbt;
 	}
 
 	// ------------------------------------------------------------

@@ -20,6 +20,8 @@
 
 namespace revivalpmmp\pureentities\entity\animal\walking;
 
+use pocketmine\nbt\tag\CompoundTag;
+
 use pocketmine\Player;
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\entity\animal\WalkingAnimal;
@@ -40,8 +42,8 @@ class Cow extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, IntfCa
 	use Breedable, CanPanic, Feedable;
 	const NETWORK_ID = Data::NETWORK_IDS["cow"];
 
-	public function initEntity() : void {
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt) : void {
+		parent::initEntity($nbt);
 		$this->width = Data::WIDTHS[self::NETWORK_ID];
 		$this->height = Data::HEIGHTS[self::NETWORK_ID];
 		$this->eyeHeight = 1;
@@ -49,14 +51,15 @@ class Cow extends WalkingAnimal implements IntfCanBreed, IntfCanInteract, IntfCa
 		$this->feedableItems = array(Item::WHEAT);
 
 		$this->breedableClass = new BreedingComponent($this);
-		$this->breedableClass->init();
+		$this->breedableClass->init($nbt);
 
 	}
 
-	public function saveNBT() : void {
+	public function saveNBT() : CompoundTag {
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
-			$this->breedableClass->saveNBT();
+			$nbt = parent::saveNBT();
+			$this->breedableClass->saveNBT($nbt);
+			return $nbt;
 		}
 	}
 

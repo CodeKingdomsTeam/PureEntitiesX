@@ -20,6 +20,8 @@
 
 namespace revivalpmmp\pureentities\entity\monster\walking;
 
+use pocketmine\nbt\tag\CompoundTag;
+
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\entity\monster\Monster;
 use revivalpmmp\pureentities\entity\monster\WalkingMonster;
@@ -38,8 +40,8 @@ class PolarBear extends WalkingMonster implements Monster{
 
 	const NETWORK_ID = Data::NETWORK_IDS["polar_bear"];
 
-	public function initEntity() : void {
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt) : void {
+		parent::initEntity($nbt);
 		$this->width = Data::WIDTHS[self::NETWORK_ID];
 		$this->height = Data::HEIGHTS[self::NETWORK_ID];
 		$this->speed = 1.13;

@@ -20,6 +20,8 @@
 
 namespace revivalpmmp\pureentities\entity\animal\walking;
 
+use pocketmine\nbt\tag\CompoundTag;
+
 use revivalpmmp\pureentities\components\BreedingComponent;
 use revivalpmmp\pureentities\entity\animal\WalkingAnimal;
 use pocketmine\entity\Rideable;
@@ -39,25 +41,26 @@ class Pig extends WalkingAnimal implements Rideable, IntfCanBreed, IntfCanIntera
 	const NETWORK_ID = Data::NETWORK_IDS["pig"];
 
 
-	public function initEntity() : void {
-		parent::initEntity();
+	public function initEntity(CompoundTag $nbt) : void {
+		parent::initEntity($nbt);
 		$this->width = Data::WIDTHS[self::NETWORK_ID];
 		$this->height = Data::HEIGHTS[self::NETWORK_ID];
 		$this->feedableItems = array(
 			Item::CARROT,
 			Item::BEETROOT);
 		$this->breedableClass = new BreedingComponent($this);
-		$this->breedableClass->init();
+		$this->breedableClass->init($nbt);
 	}
 
 	public function getName() : string{
 		return "Pig";
 	}
 
-	public function saveNBT() : void {
+	public function saveNBT() : CompoundTag {
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			parent::saveNBT();
-			$this->breedableClass->saveNBT();
+			$nbt = parent::saveNBT();
+			$this->breedableClass->saveNBT($nbt);
+			return $nbt;
 		}
 	}
 
