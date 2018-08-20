@@ -52,7 +52,6 @@ class SetTamedOwnerTask extends Task{
 	 * @param IntfTameable $tameableEntity
 	 */
 	public function __construct(PureEntities $plugin, IntfTameable $tameableEntity){
-		parent::__construct();
 		$this->plugin = $plugin;
 		$this->tameableEntity = $tameableEntity;
 	}
