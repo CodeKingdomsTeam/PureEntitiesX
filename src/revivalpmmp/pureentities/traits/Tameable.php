@@ -90,25 +90,25 @@ trait Tameable{
 	// -----------------------------------------------------------------------------------------------
 
 
-	public function saveTameNBT(){
+	public function saveTameNBT($nbt){
 
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			$this->namedtag->setByte(NBTConst::NBT_KEY_SITTING, $this->sitting ? 1 : 0, true);
+			$nbt->setByte(NBTConst::NBT_KEY_SITTING, $this->sitting ? 1 : 0, true);
 			if($this->getOwnerName() !== null){
-				$this->namedtag->setString(NBTConst::NBT_SERVER_KEY_OWNER_NAME, $this->getOwnerName(), true); // only for our own (server side)
+				$nbt->setString(NBTConst::NBT_SERVER_KEY_OWNER_NAME, $this->getOwnerName(), true); // only for our own (server side)
 			}
 			if($this->owner !== null){
-				$this->namedtag->setString(NBTConst::NBT_KEY_OWNER_UUID, $this->owner->getUniqueId()->toString(), true); // set owner UUID
-				$this->namedtag->setLong(NBTConst::NBT_KEY_OWNER_EID, $this->propertyManager->getLong(Entity::DATA_OWNER_EID), true);
+				$nbt->setString(NBTConst::NBT_KEY_OWNER_UUID, $this->owner->getUniqueId()->toString(), true); // set owner UUID
+				$nbt->setLong(NBTConst::NBT_KEY_OWNER_EID, $this->propertyManager->getLong(Entity::DATA_OWNER_EID), true);
 			}
 		}
 	}
 
-	public function loadTameNBT(){
+	public function loadTameNBT($nbt){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
-			if($this->namedtag->hasTag(NBTConst::NBT_SERVER_KEY_OWNER_NAME)){
-				$owner = $this->namedtag->getString(NBTConst::NBT_SERVER_KEY_OWNER_NAME, NBTConst::NBT_INVALID_STRING);
-				$ownerEID = $this->namedtag->getLong(NBTConst::NBT_KEY_OWNER_EID, NBTConst::NBT_INVALID_LONG, true);
+			if($nbt->hasTag(NBTConst::NBT_SERVER_KEY_OWNER_NAME)){
+				$owner = $nbt->getString(NBTConst::NBT_SERVER_KEY_OWNER_NAME, NBTConst::NBT_INVALID_STRING);
+				$ownerEID = $nbt->getLong(NBTConst::NBT_KEY_OWNER_EID, NBTConst::NBT_INVALID_LONG, true);
 				if(($owner !== NBTConst::NBT_INVALID_LONG) and ($ownerEID !== NBTConst::NBT_INVALID_LONG)){
 					$this->ownerName = $owner;
 					$this->propertyManager->setLong(Entity::DATA_OWNER_EID, $ownerEID);
@@ -122,8 +122,8 @@ trait Tameable{
 				}
 			}
 
-			if($this->namedtag->hasTag(NBTConst::NBT_KEY_SITTING)){
-				$sitting = $this->namedtag->getByte(NBTConst::NBT_KEY_SITTING, false, true);
+			if($nbt->hasTag(NBTConst::NBT_KEY_SITTING)){
+				$sitting = $nbt->getByte(NBTConst::NBT_KEY_SITTING, false, true);
 				$this->setSitting((bool) $sitting);
 
 				// Until an appropriate NBT key can be attached to this, if the entity is sitting when loaded,

@@ -187,7 +187,7 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
 	public function loadNBT(CompoundTag $nbt){
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
 			parent::loadNBT($nbt);
-			$this->loadTameNBT();
+			$this->loadTameNBT($nbt);
 			if($nbt->hasTag(NBTConst::NBT_KEY_ANGRY)){
 				$angry = $nbt->getInt(NBTConst::NBT_KEY_ANGRY, 0, true);
 				$this->setAngry($angry);
@@ -207,7 +207,7 @@ class Wolf extends WalkingMonster implements IntfTameable, IntfCanBreed, IntfCan
 	public function saveNBT() : CompoundTag {
 		if(PluginConfiguration::getInstance()->getEnableNBT()){
 			$nbt = parent::saveNBT();
-			$this->saveTameNBT();
+			$this->saveTameNBT($nbt);
 			$nbt->setInt(NBTConst::NBT_KEY_ANGRY, $this->angryValue, true);
 			$nbt->setByte(NBTConst::NBT_KEY_COLLAR_COLOR, $this->collarColor, true); // set collar color
 		}
